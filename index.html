@@ -16,22 +16,28 @@
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:'Sora',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;padding-bottom:60px;}
-    .header{background:var(--ink);padding:20px;text-align:center;position:relative;}
-    .header-logo{font-family:'Noto Serif JP',serif;font-size:22px;color:white;letter-spacing:.05em;}
+    .header{background:var(--ink);padding:18px;text-align:center;position:relative;}
+    .header-logo{font-family:'Noto Serif JP',serif;font-size:20px;color:white;letter-spacing:.05em;}
     .header-logo em{color:var(--amber);font-style:normal;}
+    .lang-bar{display:flex;justify-content:center;gap:10px;padding:10px;background:white;border-bottom:0.5px solid var(--border);}
+    .lang-btn{padding:5px 15px;border-radius:99px;border:1px solid var(--border);font-size:12px;cursor:pointer;background:transparent;color:var(--gray);}
+    .lang-btn.active{background:var(--amber);color:white;border-color:var(--amber);}
     .main{max-width:480px;margin:0 auto;padding:16px;}
     .q-card{background:white;border:0.5px solid var(--border);border-radius:16px;padding:20px;margin-bottom:14px;}
+    .q-num{color:var(--amber); font-family:'DM Mono',monospace; font-size:11px; margin-bottom:8px; display:block;}
     .q-situation{font-size:16px;font-weight:500;line-height:1.6;margin-bottom:10px;}
-    .q-tagalog{font-size:14px;color:var(--teal);background:var(--teal-light);padding:10px;border-radius:8px;font-style:italic;}
-    .option-btn{width:100%;text-align:left;padding:14px;border-radius:12px;border:1.5px solid var(--border);background:white;cursor:pointer;margin-bottom:8px;transition:0.2s;}
-    .option-btn.correct{border-color:var(--teal);background:var(--teal-light);}
-    .option-btn.wrong{border-color:var(--coral);background:var(--coral-light);}
-    .feedback-box{display:none;margin-top:14px;padding:16px;border-radius:12px;font-size:14px;line-height:1.6;border:0.5px solid var(--border);}
-    .feedback-box.correct{background:var(--teal-light);color:#0a5c40;}
-    .feedback-box.wrong{background:var(--coral-light);color:#7a2010;}
-    .next-btn{width:100%;background:var(--amber);color:white;border:none;padding:16px;border-radius:12px;font-weight:600;cursor:pointer;margin-top:10px;}
+    .q-tagalog{font-size:14px;color:var(--teal);background:var(--teal-light);padding:10px;border-radius:8px;font-style:italic;margin-bottom:15px;}
+    .option-btn{width:100%;text-align:left;padding:14px;border-radius:12px;border:1.5px solid var(--border);background:white;cursor:pointer;margin-bottom:8px;transition:0.2s;font-family:'Sora',sans-serif;}
+    .option-btn:disabled{cursor:default;}
+    .option-btn.correct{border-color:var(--teal);background:var(--teal-light);color:#0a5c40;}
+    .option-btn.wrong{border-color:var(--coral);background:var(--coral-light);color:#7a2010;}
+    .feedback-box{display:none;margin-top:14px;padding:16px;border-radius:12px;font-size:13px;line-height:1.7;border:0.5px solid var(--border);animation:fadeIn 0.3s ease;}
+    .feedback-box.correct{background:var(--teal-light);border-color:var(--teal);}
+    .feedback-box.wrong{background:var(--coral-light);border-color:var(--coral);}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+    .next-btn{width:100%;background:var(--amber);color:white;border:none;padding:16px;border-radius:12px;font-weight:600;cursor:pointer;margin-top:10px;font-family:'Sora',sans-serif;}
     .results-screen{display:none;text-align:center;padding:20px;}
-    input[type=text]{width:100%;padding:14px;border-radius:10px;border:1.5px solid var(--border);margin-bottom:10px;}
+    input[type=text]{width:100%;padding:14px;border-radius:10px;border:1.5px solid var(--border);margin-bottom:10px;font-size:16px;}
   </style>
 </head>
 <body>
@@ -40,11 +46,16 @@
   <div class="header-logo"><em>Gabay</em> Exam <span>Bilingual</span></div>
 </div>
 
+<div class="lang-bar">
+  <button class="lang-btn active" id="btn-ja" onclick="setLang('ja')">日本語</button>
+  <button class="lang-btn" id="btn-en" onclick="setLang('en')">English</button>
+</div>
+
 <div class="main">
   <div id="quiz-area">
-    <div class="q-card" id="q-card">
-      <div id="q-num" style="color:var(--amber); font-size:12px; margin-bottom:8px;"></div>
-      <p class="q-situation" id="q-jp"></p>
+    <div class="q-card">
+      <span class="q-num" id="q-num"></span>
+      <p class="q-situation" id="q-text"></p>
       <div class="q-tagalog" id="q-tl"></div>
     </div>
     <div id="options-wrap"></div>
@@ -53,52 +64,59 @@
   </div>
 
   <div class="results-screen" id="results-screen">
-    <h2>Result: <span id="final-score"></span> / 20</h2>
-    <div style="background:white; padding:20px; border-radius:16px; margin-top:20px; border:0.5px solid var(--border);">
-      <p style="font-size:12px; color:var(--gray); margin-bottom:10px;">名前を入力して監督へ報告してください</p>
-      <input type="text" id="user-name" placeholder="Name / 受験者名">
+    <h2 style="font-family:'Noto Serif JP',serif;">Score: <span id="final-score"></span> / 20</h2>
+    <div style="background:white; padding:20px; border-radius:16px; margin-top:20px; border:0.5px solid var(--border); text-align:left;">
+      <p style="font-size:12px; color:var(--gray); margin-bottom:10px;">名前を入力して監督へ報告してください / Enter name to report</p>
+      <input type="text" id="user-name" placeholder="Full Name">
       <button class="next-btn" id="send-btn" onclick="sendToSheet()">監督へ送る / Send to Director</button>
     </div>
   </div>
 </div>
 
 <script>
-  // 黄金のルートURL
   const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwEPJnzMqWbDavvD0oRdlGfI9GsgKjj5BZLqIbOBXWpOV2tbco-a6kDjM5vkYC8kcioLA/exec";
-
-  const questions = [
-    { jp:"利用者が食事中に突然むせ込んでいる", tl:"Bigla na lang nag-ubo ang pasyente habang kumakain", opts:["すぐに水を飲ませる","背中を叩いて様子を見る","前傾姿勢をとらせ、咳を促す"], c:2, fb:"前傾姿勢が誤嚥物の排出を助けます。水を飲ませるのは危険です。/ Forward tilt helps expel items." },
-    { jp:"認知症の利用者が食事を拒否している", tl:"Tumatanggi kumain ang pasyenteng may demensya", opts:["無理に口に運ぶ","好きな食べ物の話をしながら雰囲気を整える","食事をすぐに下げて記録する"], c:1, fb:"無理強いせず、本人の気持ちに寄り添うことが大切です。/ Empathy is key for dementia care." },
-    { jp:"嚥下障害のある利用者に水を提供する際の対応は？", tl:"Paano mag-aalok ng tubig sa pasyenteng may hirap sa paglunok?", opts:["普通の水をコップで出す","とろみをつけた水を少量ずつ出す","水分は禁止にする"], c:1, fb:"嚥下障害にはとろみ（増粘剤）が必要です。/ Thickened liquids prevent aspiration." },
-    { jp:"おむつ交換時に褥瘡（床ずれ）を発見した", tl:"Nakakita ng simula ng bedsore habang nagpapalit ng diaper", opts:["様子を見て翌日報告する","その場で記録し、上長にすぐ報告する","自分でクリームを塗る"], c:1, fb:"早期発見・早期報告が鉄則です。/ Early detection and reporting is mandatory." },
-    { jp:"排泄介助時、プライバシーを守る適切な方法は？", tl:"Paano mapananatili ang privacy ng pasyente?", opts:["カーテンを開けたまま行う","ドアとカーテンを閉め、最小限の介助にする","2人で行う"], c:1, fb:"ドアとカーテンを閉めるのは尊厳を守る基本です。/ Closing doors/curtains protects dignity." },
-    { jp:"車椅子への移乗介助で最初に確認すべきことは？", tl:"Ano ang unang dapat suriin bago ilipat ang pasyente?", opts:["ブレーキをかけ、フットレストを上げる","素早く持ち上げる","スタッフを呼ぶ"], c:0, fb:"ブレーキ確認が安全の第一歩です。/ Brake check is the first step for safety." },
-    { jp:"歩行介助中に利用者がふらつき、転倒しそうになった", tl:"Halos mahulog ang pasyente habang naglalakad", opts:["腕を強く引っ張る","体を支えながらゆっくり床に降ろす","離れる"], c:1, fb:"無理に止めず、安全に降ろすことで怪我を防ぎます。/ Guide them safely to the floor." },
-    { jp:"認知症の人が「家に帰りたい」と繰り返している", tl:"Paulit-ulit na nagsasabing 'umuwi' ang pasyente", opts:["強く否定する","感情に寄り添い、別の活動に誘う","無視する"], c:1, fb:"否定せず、感情を受容（バリデーション）します。/ Validate their feelings, don't deny." },
-    { jp:"認知症の人が同じ質問を何度も繰り返す", tl:"Paulit-ulit na nagtatanong ang pasyente", opts:["「さっき聞きました」と言う","毎回初めてのように丁寧に答える","移動させる"], c:1, fb:"本人には毎回が初めての不安です。丁寧に答えます。/ Answer patiently each time." },
-    { jp:"利用者が意識を失い、反応がない", tl:"Nawalan ng malay ang pasyente", opts:["一人でCPRを開始する","助けを呼び、AEDを依頼する","家族に連絡する"], c:1, fb:"まず応援を呼び、チームで対応します。/ Call for help and request an AED." },
-    { jp:"利用者が頭を打ったが、傷はない", tl:"Natamaan ang ulo pero walang sugat", opts:["様子を見る","すぐに看護師に報告しバイタルを測る","大丈夫か聞くだけ"], c:1, fb:"脳内出血の恐れがあるため、必ず報告します。/ Internal bleeding risk; report immediately." },
-    { jp:"ノロウイルス患者の嘔吐物を処理する際は？", tl:"Paglilinis ng suka ng may norovirus", opts:["素手で拭く","手袋・マスクをし次亜塩素酸で消毒","しばらく待つ"], c:1, fb:"次亜塩素酸ナトリウムでの消毒が必須です。/ Use sodium hypochlorite for disinfection." },
-    { jp:"正しい手洗いのタイミングは？", tl:"Tamang oras ng paghuhugas ng kamay", opts:["朝と晩だけ","ケアの前後、利用者に触れる前後","汚れた時だけ"], c:1, fb:"ケアの前後の手洗いが感染を防ぎます。/ Wash hands before and after care." },
-    { jp:"利用者が「死にたい」とつぶやいた", tl:"Bumulong ang pasyente na 'gusto nang mamatay'", opts:["否定する","気をそらす","真剣に受け止め、上長に報告する"], c:2, fb:"命のサインです。傾聴し、必ず共有します。/ Listen seriously and report to supervisors." },
-    { jp:"耳の聞こえにくい利用者への対応は？", tl:"Paano makipag-usap sa mahina ang pandinig?", opts:["大声で叫ぶ","正面から向き合い、口元を見せて話す","家族に頼む"], c:1, fb:"口の形を見せ、筆談も活用します。/ Face them so they can read your lips." },
-    { jp:"介護記録を書く際の正しい姿勢は？", tl:"Tamang pagsulat ng rekord", opts:["後でまとめて書く","事実を客観的に、早く書く","主観で書く"], c:1, fb:"事実はその場に近い時間で、客観的に記します。/ Record facts objectively and promptly." },
-    { jp:"利用者の食欲低下を見つけた場合", tl:"Pagbaba ng gana kumain ng pasyente", opts:["市販薬を出す","明日のスタッフに言う","看護師に報告しバイタルを測る"], c:2, fb:"小さな変化も病気の兆候かもしれません。報告します。/ Report even small changes in condition." },
-    { jp:"ナースコールを何度も押す利用者への対応", tl:"Pasyenteng laging pumipindot ng nurse call", opts:["怒る","ナースコールを遠ざける","「すぐ伺います」と寄り添う"], c:2, fb:"不安の現れかもしれません。拒絶は虐待です。/ Respond with empathy; rejection is abuse." },
-    { jp:"同僚が乱暴な言葉を使っているのを見た", tl:"Nakita mong marahas ang salita ng kasamahan", opts:["無視する","その場で止め、上長に報告する","家族に言う"], c:1, fb:"虐待の発見は通報義務があります。/ Reporting abuse is a legal duty." },
-    { jp:"「安全のため」にベッドに縛るよう言われた", tl:"Inutusang itali ang pasyente para sa kaligtasan", opts:["従う","原則禁止を伝え、別の方法を考える","怪我がなければOK"], c:1, fb:"身体拘束は原則禁止。代わりのケアを模索します。/ Restraint is prohibited; find alternatives." }
-  ];
-
+  
+  let lang = 'ja';
   let currentIdx = 0;
   let score = 0;
 
+  const questions = [
+    { ja:"利用者が食事中に突然むせ込んでいる", en:"A resident suddenly starts choking while eating", tl:"Bigla na lang nag-ubo ang pasyente habang kumakain", opts:{ja:["すぐに水を飲ませる","背中を叩いて様子を見る","前傾姿勢をとらせ、咳を促す"], en:["Give water immediately","Pat the back and observe","Tilt forward and encourage coughing"]}, c:2, fb:{ja:"前傾姿勢が誤嚥物の排出を助けます。水を飲ませるのは危険です。", en:"Leaning forward helps expel the object. Giving water is dangerous."} },
+    { ja:"認知症の利用者が食事を拒否している", en:"A resident with dementia refuses to eat", tl:"Tumatanggi kumain ang pasyenteng may demensya", opts:{ja:["無理に口に運ぶ","好きな食べ物の話をしながら雰囲気を整える","食事をすぐに下げて記録する"], en:["Force food into their mouth","Create a calm atmosphere with talk of favorite foods","Remove meal and record immediately"]}, c:1, fb:{ja:"無理強いせず、本人の気持ちに寄り添うことが大切です。", en:"It is important to empathize rather than force."} },
+    { ja:"嚥下障害のある人に提供する適切な水分は？", en:"Appropriate hydration for someone with dysphagia?", tl:"Paano mag-aalok ng tubig sa pasyenteng may hirap sa paglunok?", opts:{ja:["普通の水をコップで出す","とろみをつけた水を少量ずつ出す","水分は禁止にする"], en:["Regular water in a cup","Thickened water in small amounts","Restrict all fluids"]}, c:1, fb:{ja:"嚥下障害にはとろみ（増粘剤）が必要です。", en:"Thickening agents are necessary for dysphagia."} },
+    { ja:"おむつ交換時に褥瘡（床ずれ）を発見した", en:"Found a pressure sore during diaper change", tl:"Nakakita ng simula ng bedsore habang nagpapalit ng diaper", opts:{ja:["様子を見て翌日報告する","その場で記録し、上長にすぐ報告する","自分でクリームを塗る"], en:["Observe and report tomorrow","Record and report to supervisor immediately","Apply cream yourself"]}, c:1, fb:{ja:"早期発見・早期報告が鉄則です。", en:"Early detection and immediate reporting is key."} },
+    { ja:"排泄介助時、プライバシーを守る方法は？", en:"How to protect privacy during toileting?", tl:"Paano mapananatili ang privacy ng pasyente?", opts:{ja:["カーテンを開けたまま行う","ドアとカーテンを閉め、最小限の介助にする","2人で行う"], en:["Leave curtains open","Close doors/curtains and assist minimally","Do it with two staff"]}, c:1, fb:{ja:"ドアとカーテンを閉めるのは尊厳を守る基本です。", en:"Closing doors and curtains is basic for dignity."} },
+    { ja:"車椅子への移乗介助で最初に確認すべきことは？", en:"First thing to check for wheelchair transfer?", tl:"Ano ang unang dapat suriin bago ilipat ang pasyente?", opts:{ja:["ブレーキをかけ、フットレストを上げる","素早く持ち上げる","スタッフを呼ぶ"], en:["Apply brakes and raise footrests","Lift quickly","Call other staff"]}, c:0, fb:{ja:"ブレーキ確認が安全の第一歩です。", en:"Checking brakes is the first step for safety."} },
+    { ja:"歩行介助中に利用者がふらつき、転倒しそうになった", en:"Resident is about to fall during walking assistance", tl:"Halos mahulog ang pasyente habang naglalakad", opts:{ja:["腕を強く引っ張る","体を支えながらゆっくり床に降ろす","離れる"], en:["Pull their arm forcefully","Support and lower gently to the floor","Step away"]}, c:1, fb:{ja:"無理に止めず、安全に降ろすことで怪我を防ぎます。", en:"Guide them safely to the floor to prevent injury."} },
+    { ja:"認知症の人が「家に帰りたい」と繰り返している", en:"Dementia patient says 'I want to go home' repeatedly", tl:"Paulit-ulit na nagsasabing 'umuwi' ang pasyente", opts:{ja:["強く否定する","感情に寄り添い、別の活動に誘う","無視する"], en:["Deny it firmly","Empathize and invite to another activity","Ignore them"]}, c:1, fb:{ja:"否定せず、感情を受容（バリデーション）します。", en:"Validate their feelings instead of denying them."} },
+    { ja:"認知症の人が同じ質問を何度も繰り返す", en:"Dementia patient repeats the same question", tl:"Paulit-ulit na nagtatanong ang pasyente", opts:{ja:["「さっき聞きました」と言う","毎回初めてのように丁寧に答える","移動させる"], en:["Say 'You already asked'","Answer patiently as if for the first time","Move them elsewhere"]}, c:1, fb:{ja:"本人には毎回が初めての不安です。丁寧に答えます。", en:"Answer patiently each time as they feel fresh anxiety."} },
+    { ja:"利用者が意識を失い、反応がない", en:"Resident loses consciousness and is unresponsive", tl:"Nawalan ng malay ang pasyente", opts:{ja:["一人でCPRを開始する","助けを呼び、AEDを依頼する","家族に連絡する"], en:["Start CPR alone","Call for help and request an AED","Call the family"]}, c:1, fb:{ja:"まず応援を呼び、チームで対応します。", en:"Call for backup and respond as a team."} },
+    { ja:"利用者が頭を打ったが、傷はない", en:"Resident hit their head, but no visible wound", tl:"Natamaan ang ulo pero walang sugat", opts:{ja:["様子を見る","すぐに看護師に報告しバイタルを測る","大丈夫か聞くだけ"], en:["Observe","Report to nurse and take vitals immediately","Just ask if they are okay"]}, c:1, fb:{ja:"脳内出血の恐れがあるため、必ず報告します。", en:"Internal bleeding is possible; report immediately."} },
+    { ja:"ノロウイルス患者の嘔吐物を処理する際は？", en:"Handling vomit from a norovirus patient?", tl:"Paglilinis ng suka ng may norovirus", opts:{ja:["素手で拭く","手袋・マスクをし次亜塩素酸で消毒","しばらく待つ"], en:["Wipe with bare hands","Wear PPE and use sodium hypochlorite","Wait a while"]}, c:1, fb:{ja:"次亜塩素酸ナトリウムでの消毒が必須です。", en:"Disinfection with sodium hypochlorite is mandatory."} },
+    { ja:"正しい手洗いのタイミングは？", en:"Correct timing for handwashing?", tl:"Tamang oras ng paghuhugas ng kamay", opts:{ja:["朝と晩だけ","ケアの前後、利用者に触れる前後","汚れた時だけ"], en:["Morning and night only","Before/after care and touching residents","Only when visibly dirty"]}, c:1, fb:{ja:"ケアの前後の手洗いが感染を防ぎます。", en:"Washing before and after care prevents infection."} },
+    { ja:"利用者が「死にたい」とつぶやいた", en:"Resident whispers 'I want to die'", tl:"Bumulong ang pasyente na 'gusto ko nang mamatay'", opts:{ja:["否定する","気をそらす","真剣に受け止め、上長に報告する"], en:["Dismiss it","Distract them","Take seriously and report to supervisor"]}, c:2, fb:{ja:"命のサインです。傾聴し、必ず共有します。", en:"It's a sign. Listen and share with the team."} },
+    { ja:"耳の聞こえにくい利用者への対応は？", en:"How to talk to a hearing-impaired resident?", tl:"Paano makipag-usap sa mahina ang pandinig?", opts:{ja:["大声で叫ぶ","正面から向き合い、口元を見せて話す","家族に頼む"], en:["Shout loudly","Face them and speak showing your mouth","Ask family to relay"]}, c:1, fb:{ja:"口の形を見せ、筆談も活用します。", en:"Show your mouth shape and use writing."} },
+    { ja:"介護記録を書く際の正しい姿勢は？", en:"Correct way to write care records?", tl:"Tamang pagsulat ng rekord", opts:{ja:["後でまとめて書く","事実を客観的に、早く書く","主観で書く"], en:["Write later all at once","Write objectively and promptly","Write subjectively"]}, c:1, fb:{ja:"事実はその場に近い時間で、客観的に記します。", en:"Record facts objectively and as soon as possible."} },
+    { ja:"利用者の食欲低下を見つけた場合", en:"Noticing a resident's loss of appetite", tl:"Pagbaba ng gana kumain ng pasyente", opts:{ja:["市販薬を出す","明日のスタッフに言う","看護師に報告しバイタルを測る"], en:["Give OTC medicine","Tell tomorrow's staff","Report to nurse and take vitals"]}, c:2, fb:{ja:"小さな変化も病気の兆候かもしれません。", en:"Small changes can be signs of illness."} },
+    { ja:"ナースコールを何度も押す利用者への対応", en:"Resident who presses the call button repeatedly", tl:"Pasyenteng laging pumipindot ng nurse call", opts:{ja:["怒る","ナースコールを遠ざける","「すぐ伺います」と寄り添う"], en:["Get angry","Move the button away","Respond with empathy"]}, c:2, fb:{ja:"不安の現れかもしれません。拒絶は虐待です。", en:"It may be anxiety. Rejection is abuse."} },
+    { ja:"同僚が乱暴な言葉を使っているのを見た", en:"Witnessing a colleague use harsh language", tl:"Nakita mong marahas ang salita ng kasamahan", opts:{ja:["無視する","その場で止め、上長に報告する","家族に言う"], en:["Ignore it","Stop it and report to supervisor","Tell the family"]}, c:1, fb:{ja:"虐待の発見は通報義務があります。", en:"Reporting abuse is a legal duty."} },
+    { ja:"「安全のため」にベッドに縛るよう言われた", en:"Instructed to restrain a resident for safety", tl:"Inutusan ka na itali ang pasyente", opts:{ja:["従う","原則禁止を伝え、別の方法を考える","怪我がなければOK"], en:["Follow orders","Explain it's prohibited and find alternatives","It's OK if no injury"]}, c:1, fb:{ja:"身体拘束は原則禁止です。", en:"Physical restraint is prohibited in principle."} }
+  ];
+
+  function setLang(l) {
+    lang = l;
+    document.getElementById('btn-ja').classList.toggle('active', l === 'ja');
+    document.getElementById('btn-en').classList.toggle('active', l === 'en');
+    renderQ();
+  }
+
   function renderQ() {
     const q = questions[currentIdx];
-    document.getElementById('q-num').textContent = `Q ${currentIdx + 1} / 20`;
-    document.getElementById('q-jp').textContent = q.jp;
+    document.getElementById('q-num').textContent = `QUESTION ${currentIdx + 1} / 20`;
+    document.getElementById('q-text').textContent = q[lang];
     document.getElementById('q-tl').textContent = "🇵🇭 " + q.tl;
     const wrap = document.getElementById('options-wrap');
-    wrap.innerHTML = q.opts.map((o, i) => `<button class="option-btn" onclick="check(${i})">${o}</button>`).join('');
+    wrap.innerHTML = q.opts[lang].map((o, i) => `<button class="option-btn" onclick="check(${i})">${o}</button>`).join('');
     document.getElementById('feedback-box').style.display = 'none';
     document.getElementById('next-btn').style.display = 'none';
   }
@@ -109,7 +127,7 @@
     btns.forEach(b => b.disabled = true);
     const fb = document.getElementById('feedback-box');
     fb.style.display = 'block';
-    fb.textContent = q.fb;
+    fb.textContent = q.fb[lang];
     if(i === q.c) {
       btns[i].classList.add('correct');
       fb.className = 'feedback-box correct';
