@@ -2,162 +2,151 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gabay Exam - Caregiver Basic</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Gabay Exam Bilingual — 特定技能介護 / Care Work Exam</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;300;400&family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
-    :root { --primary: #2c3e50; --secondary: #34495e; --accent: #3498db; --success: #27ae60; --bg: #f4f7f6; }
-    body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: var(--bg); color: var(--primary); margin: 0; padding: 20px; line-height: 1.6; }
-    .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    h1 { text-align: center; color: var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
-    .intro { margin-bottom: 30px; padding: 15px; background: #e8f4fd; border-left: 5px solid var(--accent); }
-    .question-card { margin-bottom: 25px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background: #fff; }
-    .question-text { font-weight: bold; margin-bottom: 15px; font-size: 1.1em; }
-    .jp-text { display: block; color: var(--secondary); font-size: 0.9em; margin-bottom: 5px; }
-    .tagalog-text { display: block; color: #7f8c8d; font-style: italic; margin-bottom: 10px; }
-    .options label { display: block; padding: 10px; margin-bottom: 8px; background: #f9f9f9; border: 1px solid #eee; border-radius: 5px; cursor: pointer; transition: 0.2s; }
-    .options label:hover { background: #f0f0f0; }
-    input[type="radio"] { margin-right: 10px; }
-    .input-group { margin: 20px 0; text-align: center; }
-    input[type="text"] { padding: 12px; width: 80%; max-width: 300px; border: 2px solid #ddd; border-radius: 6px; font-size: 16px; }
-    button { display: block; width: 100%; max-width: 300px; margin: 20px auto; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; }
-    button:hover { background: #2980b9; }
-    #results-screen, #success-screen { display: none; text-align: center; }
-    .score-display { font-size: 48px; font-weight: bold; color: var(--accent); margin: 20px 0; }
+    :root {
+      --amber:#EF9F27;--amber-light:#FAEEDA;--amber-dark:#854F0B;
+      --teal:#1D9E75;--teal-light:#E1F5EE;
+      --coral:#D85A30;--coral-light:#FAECE7;
+      --gray:#888780;--ink:#1a1a18;
+      --paper:#F9F8F4;--surface:#F2F1EB;
+      --border:rgba(26,26,24,0.1);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Sora',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;padding-bottom:60px;}
+    .header{background:var(--ink);padding:20px;text-align:center;position:relative;}
+    .header-logo{font-family:'Noto Serif JP',serif;font-size:22px;color:white;letter-spacing:.05em;}
+    .header-logo em{color:var(--amber);font-style:normal;}
+    .main{max-width:480px;margin:0 auto;padding:16px;}
+    .q-card{background:white;border:0.5px solid var(--border);border-radius:16px;padding:20px;margin-bottom:14px;}
+    .q-situation{font-size:16px;font-weight:500;line-height:1.6;margin-bottom:10px;}
+    .q-tagalog{font-size:14px;color:var(--teal);background:var(--teal-light);padding:10px;border-radius:8px;font-style:italic;}
+    .option-btn{width:100%;text-align:left;padding:14px;border-radius:12px;border:1.5px solid var(--border);background:white;cursor:pointer;margin-bottom:8px;transition:0.2s;}
+    .option-btn.correct{border-color:var(--teal);background:var(--teal-light);}
+    .option-btn.wrong{border-color:var(--coral);background:var(--coral-light);}
+    .feedback-box{display:none;margin-top:14px;padding:16px;border-radius:12px;font-size:14px;line-height:1.6;border:0.5px solid var(--border);}
+    .feedback-box.correct{background:var(--teal-light);color:#0a5c40;}
+    .feedback-box.wrong{background:var(--coral-light);color:#7a2010;}
+    .next-btn{width:100%;background:var(--amber);color:white;border:none;padding:16px;border-radius:12px;font-weight:600;cursor:pointer;margin-top:10px;}
+    .results-screen{display:none;text-align:center;padding:20px;}
+    input[type=text]{width:100%;padding:14px;border-radius:10px;border:1.5px solid var(--border);margin-bottom:10px;}
   </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>Gabay Exam: Caregiving Basics</h1>
-  
-  <div id="setup-screen">
-    <div class="intro">
-      <p><strong>To all Filipino Caregivers:</strong><br>Please enter your name and start the exam. Your results will be sent to the administrator.</p>
+<div class="header">
+  <div class="header-logo"><em>Gabay</em> Exam <span>Bilingual</span></div>
+</div>
+
+<div class="main">
+  <div id="quiz-area">
+    <div class="q-card" id="q-card">
+      <div id="q-num" style="color:var(--amber); font-size:12px; margin-bottom:8px;"></div>
+      <p class="q-situation" id="q-jp"></p>
+      <div class="q-tagalog" id="q-tl"></div>
     </div>
-    <div class="input-group">
-      <label for="f-name">Full Name:</label><br><br>
-      <input type="text" id="f-name" placeholder="Enter your name" required>
+    <div id="options-wrap"></div>
+    <div class="feedback-box" id="feedback-box"></div>
+    <button class="next-btn" id="next-btn" style="display:none;" onclick="nextQuestion()">次の問題へ / Next →</button>
+  </div>
+
+  <div class="results-screen" id="results-screen">
+    <h2>Result: <span id="final-score"></span> / 20</h2>
+    <div style="background:white; padding:20px; border-radius:16px; margin-top:20px; border:0.5px solid var(--border);">
+      <p style="font-size:12px; color:var(--gray); margin-bottom:10px;">名前を入力して監督へ報告してください</p>
+      <input type="text" id="user-name" placeholder="Name / 受験者名">
+      <button class="next-btn" id="send-btn" onclick="sendToSheet()">監督へ送る / Send to Director</button>
     </div>
-    <button onclick="startExam()">Start Exam</button>
-  </div>
-
-  <div id="exam-screen" style="display:none;">
-    <div id="questions-container"></div>
-    <button onclick="showResults()">Finish & See Score</button>
-  </div>
-
-  <div id="results-screen">
-    <h2>Your Result</h2>
-    <div class="score-display" id="final-score">0 / 20</div>
-    <p id="result-msg"></p>
-    <button id="send-btn" onclick="sendResults()">Send Result to Admin</button>
-  </div>
-
-  <div id="success-screen">
-    <h2 style="color: var(--success);">Successfully Sent!</h2>
-    <p>Thank you. Your score has been recorded in the administrator's spreadsheet.</p>
-    <button onclick="location.reload()">Take Again</button>
   </div>
 </div>
 
 <script>
-  // 監督！ここが新しい「黄金のルート」URLです
+  // 黄金のルートURL
   const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwEPJnzMqWbDavvD0oRdlGfI9GsgKjj5BZLqIbOBXWpOV2tbco-a6kDjM5vkYC8kcioLA/exec";
 
   const questions = [
-    { q:"食事介助で正しい姿勢は？", t:"Ano ang tamang posisyon sa pagpapakain?", a:["顎を引く (Yumuko nang bahagya)","顎を上げる (Tingala)","横を向く (Nakaharap sa gilid)"], c:0 },
-    { q:"嚥下障害がある方への飲み物は？", t:"Ano ang dapat ibigay sa may problema sa paglaklak?", a:["とろみをつける (May thickener)","そのまま出す (Ibigay nang diretso)","一気に飲ませる (Ipainom nang mabilis)"], c:0 },
-    { q:"着替えの基本は？", t:"Ano ang basic sa pagbibihis?", a:["脱健着患 (Tanggal sa malakas, suot sa mahina)","脱患着健 (Tanggal sa mahina, suot sa malakas)","どちらでもよい (Kahit alin)"], c:0 },
-    { q:"入浴の温度で適切なのは？", t:"Ano ang tamang temperatura ng paliguan?", a:["38～40℃","45～48℃","25～30℃"], c:0 },
-    { q:"車椅子のブレーキはいつかける？", t:"Kailan dapat i-preno ang wheelchair?", a:["止まっている時常に (Laging naka-preno pag hinto)","動いている時 (Habang umaandar)","かけなくてよい (Hindi na kailangan)"], c:0 },
-    { q:"認知症の方への対応で正しいのは？", t:"Ano ang tamang pagtrato sa may dementia?", a:["否定しない (Huwag i-deny)","間違いを叱る (Pagalitan ang mali)","子供扱いする (Tratuhin na parang bata)"], c:0 },
-    { q:"めまいの訴えがある時、最初にすることは？", t:"Ano ang unang gagawin pag nahihilo ang pasyente?", a:["安静にする (Pagpahingahin)","歩かせる (Palakarin)","水をたくさん飲ませる (Painumin ng maraming tubig)"], c:0 },
-    { q:"床ずれ（褥瘡）予防に大切なのは？", t:"Ano ang mahalaga para maiwasan ang bedsores?", a:["体位変換 (Pagbabago ng posisyon)","毎日入浴 (Ligo araw-araw)","厚着をさせる (Pabihisin nang makapal)"], c:0 },
-    { q:"排泄介助で配慮することは？", t:"Ano ang dapat isaalang-alang sa pag-assist sa pag-ihi/dumi?", a:["プライバシーの保護 (Proteksyon ng privacy)","早く終わらせる (Tapusin nang mabilis)","大きな声で話す (Magsalita nang malakas)"], c:0 },
-    { q:"手洗いの基本で最も大切なのは？", t:"Ano ang pinaka-importante sa paghuhugas ng kamay?", a:["石鹸でよく洗う (Sabunin nang mabuti)","水だけで洗う (Tubig lang)","タオルを共有する (Maki-share ng tuwalya)"], c:0 },
-    { q:"杖を使う時の基本は？", t:"Ano ang basic sa paggamit ng tungkod?", a:["三点歩行 (3-point walking)","一点歩行 (1-point walking)","杖は使わない (Huwag gumamit)"], c:0 },
-    { q:"口腔ケアの目的は？", t:"Ano ang layunin ng oral care?", a:["誤嚥性肺炎の予防 (Iwas sa aspiration pneumonia)","お腹を膨らませる (Para mabusog)","喉を枯らす (Para mamalat)"], c:0 },
-    { q:"コミュニケーションの基本は？", t:"Ano ang basic sa komunikasyon?", a:["傾聴 (Makinig nang mabuti)","一方的に話す (Magsalita nang solo)","無視する (I-ignore)"], c:0 },
-    { q:"バイタルサインに含まれないのは？", t:"Alin ang HINDI kasama sa vital signs?", a:["好きな食べ物 (Paboritong pagkain)","体温 (Body temp)","血圧 (Blood pressure)"], c:0 },
-    { q:"介護保険制度の目的は？", t:"Ano ang layunin ng Long-term Care Insurance?", a:["自立支援 (Suporta sa pagiging independent)","家族の強制 (Pagpilit sa pamilya)","入院の継続 (Tuloy-tuloy na pagkaka-ospital)"], c:0 },
-    { q:"ポータブルトイレの設置場所は？", t:"Saan dapat ilagay ang portable toilet?", a:["ベッドの横 (Tabi ng kama)","玄関 (Sa pintuan)","外 (Sa labas)"], c:0 },
-    { q:"視覚障害者への誘導で正しいのは？", t:"Paano i-guide ang taong may problema sa paningin?", a:["肘を持ってもらう (Pahawakin sa siko)","後ろから押す (Itulak mula sa likod)","黙って引っ張る (Hilahin nang walang kibo)"], c:0 },
-    { q:"睡眠環境で適切なのは？", t:"Ano ang tamang kapaligiran para sa pagtulog?", a:["静かで暗い (Tahimik at madilim)","明るく騒がしい (Maliwanag at maingay)","とても寒い (Sobrang lamig)"], c:0 },
-    { q:"介護職の倫理で大切なのは？", t:"Ano ang mahalaga sa ethics ng caregiver?", a:["秘密保持 (Confidentiality)","情報の公開 (Ipagkalat ang info)","個人の無視 (I-ignore ang indibidwal)"], c:0 },
-    { q:"熱中症の予防で大切なのは？", t:"Ano ang mahalaga para maiwasan ang heatstroke?", a:["水分補給 (Pag-inom ng tubig)","運動を続ける (Tuloy ang exercise)","厚着をする (Magsuot nang makapal)"], c:0 }
+    { jp:"利用者が食事中に突然むせ込んでいる", tl:"Bigla na lang nag-ubo ang pasyente habang kumakain", opts:["すぐに水を飲ませる","背中を叩いて様子を見る","前傾姿勢をとらせ、咳を促す"], c:2, fb:"前傾姿勢が誤嚥物の排出を助けます。水を飲ませるのは危険です。/ Forward tilt helps expel items." },
+    { jp:"認知症の利用者が食事を拒否している", tl:"Tumatanggi kumain ang pasyenteng may demensya", opts:["無理に口に運ぶ","好きな食べ物の話をしながら雰囲気を整える","食事をすぐに下げて記録する"], c:1, fb:"無理強いせず、本人の気持ちに寄り添うことが大切です。/ Empathy is key for dementia care." },
+    { jp:"嚥下障害のある利用者に水を提供する際の対応は？", tl:"Paano mag-aalok ng tubig sa pasyenteng may hirap sa paglunok?", opts:["普通の水をコップで出す","とろみをつけた水を少量ずつ出す","水分は禁止にする"], c:1, fb:"嚥下障害にはとろみ（増粘剤）が必要です。/ Thickened liquids prevent aspiration." },
+    { jp:"おむつ交換時に褥瘡（床ずれ）を発見した", tl:"Nakakita ng simula ng bedsore habang nagpapalit ng diaper", opts:["様子を見て翌日報告する","その場で記録し、上長にすぐ報告する","自分でクリームを塗る"], c:1, fb:"早期発見・早期報告が鉄則です。/ Early detection and reporting is mandatory." },
+    { jp:"排泄介助時、プライバシーを守る適切な方法は？", tl:"Paano mapananatili ang privacy ng pasyente?", opts:["カーテンを開けたまま行う","ドアとカーテンを閉め、最小限の介助にする","2人で行う"], c:1, fb:"ドアとカーテンを閉めるのは尊厳を守る基本です。/ Closing doors/curtains protects dignity." },
+    { jp:"車椅子への移乗介助で最初に確認すべきことは？", tl:"Ano ang unang dapat suriin bago ilipat ang pasyente?", opts:["ブレーキをかけ、フットレストを上げる","素早く持ち上げる","スタッフを呼ぶ"], c:0, fb:"ブレーキ確認が安全の第一歩です。/ Brake check is the first step for safety." },
+    { jp:"歩行介助中に利用者がふらつき、転倒しそうになった", tl:"Halos mahulog ang pasyente habang naglalakad", opts:["腕を強く引っ張る","体を支えながらゆっくり床に降ろす","離れる"], c:1, fb:"無理に止めず、安全に降ろすことで怪我を防ぎます。/ Guide them safely to the floor." },
+    { jp:"認知症の人が「家に帰りたい」と繰り返している", tl:"Paulit-ulit na nagsasabing 'umuwi' ang pasyente", opts:["強く否定する","感情に寄り添い、別の活動に誘う","無視する"], c:1, fb:"否定せず、感情を受容（バリデーション）します。/ Validate their feelings, don't deny." },
+    { jp:"認知症の人が同じ質問を何度も繰り返す", tl:"Paulit-ulit na nagtatanong ang pasyente", opts:["「さっき聞きました」と言う","毎回初めてのように丁寧に答える","移動させる"], c:1, fb:"本人には毎回が初めての不安です。丁寧に答えます。/ Answer patiently each time." },
+    { jp:"利用者が意識を失い、反応がない", tl:"Nawalan ng malay ang pasyente", opts:["一人でCPRを開始する","助けを呼び、AEDを依頼する","家族に連絡する"], c:1, fb:"まず応援を呼び、チームで対応します。/ Call for help and request an AED." },
+    { jp:"利用者が頭を打ったが、傷はない", tl:"Natamaan ang ulo pero walang sugat", opts:["様子を見る","すぐに看護師に報告しバイタルを測る","大丈夫か聞くだけ"], c:1, fb:"脳内出血の恐れがあるため、必ず報告します。/ Internal bleeding risk; report immediately." },
+    { jp:"ノロウイルス患者の嘔吐物を処理する際は？", tl:"Paglilinis ng suka ng may norovirus", opts:["素手で拭く","手袋・マスクをし次亜塩素酸で消毒","しばらく待つ"], c:1, fb:"次亜塩素酸ナトリウムでの消毒が必須です。/ Use sodium hypochlorite for disinfection." },
+    { jp:"正しい手洗いのタイミングは？", tl:"Tamang oras ng paghuhugas ng kamay", opts:["朝と晩だけ","ケアの前後、利用者に触れる前後","汚れた時だけ"], c:1, fb:"ケアの前後の手洗いが感染を防ぎます。/ Wash hands before and after care." },
+    { jp:"利用者が「死にたい」とつぶやいた", tl:"Bumulong ang pasyente na 'gusto nang mamatay'", opts:["否定する","気をそらす","真剣に受け止め、上長に報告する"], c:2, fb:"命のサインです。傾聴し、必ず共有します。/ Listen seriously and report to supervisors." },
+    { jp:"耳の聞こえにくい利用者への対応は？", tl:"Paano makipag-usap sa mahina ang pandinig?", opts:["大声で叫ぶ","正面から向き合い、口元を見せて話す","家族に頼む"], c:1, fb:"口の形を見せ、筆談も活用します。/ Face them so they can read your lips." },
+    { jp:"介護記録を書く際の正しい姿勢は？", tl:"Tamang pagsulat ng rekord", opts:["後でまとめて書く","事実を客観的に、早く書く","主観で書く"], c:1, fb:"事実はその場に近い時間で、客観的に記します。/ Record facts objectively and promptly." },
+    { jp:"利用者の食欲低下を見つけた場合", tl:"Pagbaba ng gana kumain ng pasyente", opts:["市販薬を出す","明日のスタッフに言う","看護師に報告しバイタルを測る"], c:2, fb:"小さな変化も病気の兆候かもしれません。報告します。/ Report even small changes in condition." },
+    { jp:"ナースコールを何度も押す利用者への対応", tl:"Pasyenteng laging pumipindot ng nurse call", opts:["怒る","ナースコールを遠ざける","「すぐ伺います」と寄り添う"], c:2, fb:"不安の現れかもしれません。拒絶は虐待です。/ Respond with empathy; rejection is abuse." },
+    { jp:"同僚が乱暴な言葉を使っているのを見た", tl:"Nakita mong marahas ang salita ng kasamahan", opts:["無視する","その場で止め、上長に報告する","家族に言う"], c:1, fb:"虐待の発見は通報義務があります。/ Reporting abuse is a legal duty." },
+    { jp:"「安全のため」にベッドに縛るよう言われた", tl:"Inutusang itali ang pasyente para sa kaligtasan", opts:["従う","原則禁止を伝え、別の方法を考える","怪我がなければOK"], c:1, fb:"身体拘束は原則禁止。代わりのケアを模索します。/ Restraint is prohibited; find alternatives." }
   ];
 
+  let currentIdx = 0;
   let score = 0;
 
-  function startExam() {
-    const name = document.getElementById('f-name').value;
-    if(!name) { alert("Please enter your name."); return; }
-    document.getElementById('setup-screen').style.display = 'none';
-    document.getElementById('exam-screen').style.display = 'block';
-    renderQuestions();
+  function renderQ() {
+    const q = questions[currentIdx];
+    document.getElementById('q-num').textContent = `Q ${currentIdx + 1} / 20`;
+    document.getElementById('q-jp').textContent = q.jp;
+    document.getElementById('q-tl').textContent = "🇵🇭 " + q.tl;
+    const wrap = document.getElementById('options-wrap');
+    wrap.innerHTML = q.opts.map((o, i) => `<button class="option-btn" onclick="check(${i})">${o}</button>`).join('');
+    document.getElementById('feedback-box').style.display = 'none';
+    document.getElementById('next-btn').style.display = 'none';
   }
 
-  function renderQuestions() {
-    const container = document.getElementById('questions-container');
-    questions.forEach((q, index) => {
-      const card = document.createElement('div');
-      card.className = 'question-card';
-      card.innerHTML = `
-        <div class="question-text">
-          <span class="jp-text">${index + 1}. ${q.q}</span>
-          <span class="tagalog-text">${q.t}</span>
-        </div>
-        <div class="options">
-          ${q.a.map((opt, i) => `
-            <label>
-              <input type="radio" name="q${index}" value="${i}"> ${opt}
-            </label>
-          `).join('')}
-        </div>
-      `;
-      container.appendChild(card);
-    });
+  function check(i) {
+    const q = questions[currentIdx];
+    const btns = document.querySelectorAll('.option-btn');
+    btns.forEach(b => b.disabled = true);
+    const fb = document.getElementById('feedback-box');
+    fb.style.display = 'block';
+    fb.textContent = q.fb;
+    if(i === q.c) {
+      btns[i].classList.add('correct');
+      fb.className = 'feedback-box correct';
+      score++;
+    } else {
+      btns[i].classList.add('wrong');
+      btns[q.c].classList.add('correct');
+      fb.className = 'feedback-box wrong';
+    }
+    document.getElementById('next-btn').style.display = 'block';
   }
 
-  function showResults() {
-    score = 0;
-    questions.forEach((q, index) => {
-      const selected = document.querySelector(`input[name="q${index}"]:checked`);
-      if(selected && parseInt(selected.value) === q.c) score++;
-    });
-    document.getElementById('exam-screen').style.display = 'none';
-    document.getElementById('results-screen').style.display = 'block';
-    document.getElementById('final-score').textContent = `${score} / ${questions.length}`;
-    window.scrollTo(0,0);
+  function nextQuestion() {
+    currentIdx++;
+    if(currentIdx < 20) renderQ();
+    else {
+      document.getElementById('quiz-area').style.display = 'none';
+      document.getElementById('results-screen').style.display = 'block';
+      document.getElementById('final-score').textContent = score;
+    }
   }
 
-  function sendResults() {
-    const name = document.getElementById('f-name').value;
+  function sendToSheet() {
+    const name = document.getElementById('user-name').value;
+    if(!name) return alert("Enter your name!");
     const btn = document.getElementById('send-btn');
-    btn.textContent = 'Sending...';
-    btn.disabled = true;
-
-    const data = {
-      name: name,
-      score: score,
-      total: questions.length,
-      report: `[Gabay Exam]\nName: ${name}\nScore: ${score}/20\nDate: ${new Date().toLocaleString()}`
-    };
-
+    btn.textContent = "Sending..."; btn.disabled = true;
     fetch(WEB_APP_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
+      method: "POST", mode: "no-cors",
+      body: JSON.stringify({ name: name, score: score, report: `Result: ${score}/20 by ${name}` })
     }).then(() => {
       document.getElementById('results-screen').style.display = 'none';
-      document.getElementById('success-screen').style.display = 'block';
-    }).catch(err => {
-      alert("Error sending data. Please try again.");
-      btn.disabled = false;
-      btn.textContent = "Send Result to Admin";
+      alert("Sent Successfully!");
+      location.reload();
     });
   }
+  renderQ();
 </script>
 </body>
 </html>
