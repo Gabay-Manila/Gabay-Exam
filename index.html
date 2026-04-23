@@ -1,89 +1,163 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration Form</title>
-    <style>
-        body { font-family: sans-serif; padding: 20px; max-width: 500px; margin: auto; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, select { width: 100%; padding: 8px; box-sizing: border-box; }
-        button { background-color: #007bff; color: white; border: none; padding: 10px 15px; cursor: pointer; width: 100%; border-radius: 4px; font-size: 16px; }
-        button:hover { background-color: #0056b3; }
-        #message { margin-top: 20px; padding: 10px; border-radius: 4px; display: none; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gabay Exam - Caregiver Basic</title>
+  <style>
+    :root { --primary: #2c3e50; --secondary: #34495e; --accent: #3498db; --success: #27ae60; --bg: #f4f7f6; }
+    body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: var(--bg); color: var(--primary); margin: 0; padding: 20px; line-height: 1.6; }
+    .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    h1 { text-align: center; color: var(--primary); border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
+    .intro { margin-bottom: 30px; padding: 15px; background: #e8f4fd; border-left: 5px solid var(--accent); }
+    .question-card { margin-bottom: 25px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background: #fff; }
+    .question-text { font-weight: bold; margin-bottom: 15px; font-size: 1.1em; }
+    .jp-text { display: block; color: var(--secondary); font-size: 0.9em; margin-bottom: 5px; }
+    .tagalog-text { display: block; color: #7f8c8d; font-style: italic; margin-bottom: 10px; }
+    .options label { display: block; padding: 10px; margin-bottom: 8px; background: #f9f9f9; border: 1px solid #eee; border-radius: 5px; cursor: pointer; transition: 0.2s; }
+    .options label:hover { background: #f0f0f0; }
+    input[type="radio"] { margin-right: 10px; }
+    .input-group { margin: 20px 0; text-align: center; }
+    input[type="text"] { padding: 12px; width: 80%; max-width: 300px; border: 2px solid #ddd; border-radius: 6px; font-size: 16px; }
+    button { display: block; width: 100%; max-width: 300px; margin: 20px auto; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; }
+    button:hover { background: #2980b9; }
+    #results-screen, #success-screen { display: none; text-align: center; }
+    .score-display { font-size: 48px; font-weight: bold; color: var(--accent); margin: 20px 0; }
+  </style>
 </head>
 <body>
 
-    <h2>Registration Form</h2>
-    <form id="regForm">
-        <div class="form-group">
-            <label for="name">Name</label>
-            <input type="text" id="name" name="name" required>
+<div class="container">
+  <h1>Gabay Exam: Caregiving Basics</h1>
+  
+  <div id="setup-screen">
+    <div class="intro">
+      <p><strong>To all Filipino Caregivers:</strong><br>Please enter your name and start the exam. Your results will be sent to the administrator.</p>
+    </div>
+    <div class="input-group">
+      <label for="f-name">Full Name:</label><br><br>
+      <input type="text" id="f-name" placeholder="Enter your name" required>
+    </div>
+    <button onclick="startExam()">Start Exam</button>
+  </div>
+
+  <div id="exam-screen" style="display:none;">
+    <div id="questions-container"></div>
+    <button onclick="showResults()">Finish & See Score</button>
+  </div>
+
+  <div id="results-screen">
+    <h2>Your Result</h2>
+    <div class="score-display" id="final-score">0 / 20</div>
+    <p id="result-msg"></p>
+    <button id="send-btn" onclick="sendResults()">Send Result to Admin</button>
+  </div>
+
+  <div id="success-screen">
+    <h2 style="color: var(--success);">Successfully Sent!</h2>
+    <p>Thank you. Your score has been recorded in the administrator's spreadsheet.</p>
+    <button onclick="location.reload()">Take Again</button>
+  </div>
+</div>
+
+<script>
+  // 監督！ここが新しい「黄金のルート」URLです
+  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwEPJnzMqWbDavvD0oRdlGfI9GsgKjj5BZLqIbOBXWpOV2tbco-a6kDjM5vkYC8kcioLA/exec";
+
+  const questions = [
+    { q:"食事介助で正しい姿勢は？", t:"Ano ang tamang posisyon sa pagpapakain?", a:["顎を引く (Yumuko nang bahagya)","顎を上げる (Tingala)","横を向く (Nakaharap sa gilid)"], c:0 },
+    { q:"嚥下障害がある方への飲み物は？", t:"Ano ang dapat ibigay sa may problema sa paglaklak?", a:["とろみをつける (May thickener)","そのまま出す (Ibigay nang diretso)","一気に飲ませる (Ipainom nang mabilis)"], c:0 },
+    { q:"着替えの基本は？", t:"Ano ang basic sa pagbibihis?", a:["脱健着患 (Tanggal sa malakas, suot sa mahina)","脱患着健 (Tanggal sa mahina, suot sa malakas)","どちらでもよい (Kahit alin)"], c:0 },
+    { q:"入浴の温度で適切なのは？", t:"Ano ang tamang temperatura ng paliguan?", a:["38～40℃","45～48℃","25～30℃"], c:0 },
+    { q:"車椅子のブレーキはいつかける？", t:"Kailan dapat i-preno ang wheelchair?", a:["止まっている時常に (Laging naka-preno pag hinto)","動いている時 (Habang umaandar)","かけなくてよい (Hindi na kailangan)"], c:0 },
+    { q:"認知症の方への対応で正しいのは？", t:"Ano ang tamang pagtrato sa may dementia?", a:["否定しない (Huwag i-deny)","間違いを叱る (Pagalitan ang mali)","子供扱いする (Tratuhin na parang bata)"], c:0 },
+    { q:"めまいの訴えがある時、最初にすることは？", t:"Ano ang unang gagawin pag nahihilo ang pasyente?", a:["安静にする (Pagpahingahin)","歩かせる (Palakarin)","水をたくさん飲ませる (Painumin ng maraming tubig)"], c:0 },
+    { q:"床ずれ（褥瘡）予防に大切なのは？", t:"Ano ang mahalaga para maiwasan ang bedsores?", a:["体位変換 (Pagbabago ng posisyon)","毎日入浴 (Ligo araw-araw)","厚着をさせる (Pabihisin nang makapal)"], c:0 },
+    { q:"排泄介助で配慮することは？", t:"Ano ang dapat isaalang-alang sa pag-assist sa pag-ihi/dumi?", a:["プライバシーの保護 (Proteksyon ng privacy)","早く終わらせる (Tapusin nang mabilis)","大きな声で話す (Magsalita nang malakas)"], c:0 },
+    { q:"手洗いの基本で最も大切なのは？", t:"Ano ang pinaka-importante sa paghuhugas ng kamay?", a:["石鹸でよく洗う (Sabunin nang mabuti)","水だけで洗う (Tubig lang)","タオルを共有する (Maki-share ng tuwalya)"], c:0 },
+    { q:"杖を使う時の基本は？", t:"Ano ang basic sa paggamit ng tungkod?", a:["三点歩行 (3-point walking)","一点歩行 (1-point walking)","杖は使わない (Huwag gumamit)"], c:0 },
+    { q:"口腔ケアの目的は？", t:"Ano ang layunin ng oral care?", a:["誤嚥性肺炎の予防 (Iwas sa aspiration pneumonia)","お腹を膨らませる (Para mabusog)","喉を枯らす (Para mamalat)"], c:0 },
+    { q:"コミュニケーションの基本は？", t:"Ano ang basic sa komunikasyon?", a:["傾聴 (Makinig nang mabuti)","一方的に話す (Magsalita nang solo)","無視する (I-ignore)"], c:0 },
+    { q:"バイタルサインに含まれないのは？", t:"Alin ang HINDI kasama sa vital signs?", a:["好きな食べ物 (Paboritong pagkain)","体温 (Body temp)","血圧 (Blood pressure)"], c:0 },
+    { q:"介護保険制度の目的は？", t:"Ano ang layunin ng Long-term Care Insurance?", a:["自立支援 (Suporta sa pagiging independent)","家族の強制 (Pagpilit sa pamilya)","入院の継続 (Tuloy-tuloy na pagkaka-ospital)"], c:0 },
+    { q:"ポータブルトイレの設置場所は？", t:"Saan dapat ilagay ang portable toilet?", a:["ベッドの横 (Tabi ng kama)","玄関 (Sa pintuan)","外 (Sa labas)"], c:0 },
+    { q:"視覚障害者への誘導で正しいのは？", t:"Paano i-guide ang taong may problema sa paningin?", a:["肘を持ってもらう (Pahawakin sa siko)","後ろから押す (Itulak mula sa likod)","黙って引っ張る (Hilahin nang walang kibo)"], c:0 },
+    { q:"睡眠環境で適切なのは？", t:"Ano ang tamang kapaligiran para sa pagtulog?", a:["静かで暗い (Tahimik at madilim)","明るく騒がしい (Maliwanag at maingay)","とても寒い (Sobrang lamig)"], c:0 },
+    { q:"介護職の倫理で大切なのは？", t:"Ano ang mahalaga sa ethics ng caregiver?", a:["秘密保持 (Confidentiality)","情報の公開 (Ipagkalat ang info)","個人の無視 (I-ignore ang indibidwal)"], c:0 },
+    { q:"熱中症の予防で大切なのは？", t:"Ano ang mahalaga para maiwasan ang heatstroke?", a:["水分補給 (Pag-inom ng tubig)","運動を続ける (Tuloy ang exercise)","厚着をする (Magsuot nang makapal)"], c:0 }
+  ];
+
+  let score = 0;
+
+  function startExam() {
+    const name = document.getElementById('f-name').value;
+    if(!name) { alert("Please enter your name."); return; }
+    document.getElementById('setup-screen').style.display = 'none';
+    document.getElementById('exam-screen').style.display = 'block';
+    renderQuestions();
+  }
+
+  function renderQuestions() {
+    const container = document.getElementById('questions-container');
+    questions.forEach((q, index) => {
+      const card = document.createElement('div');
+      card.className = 'question-card';
+      card.innerHTML = `
+        <div class="question-text">
+          <span class="jp-text">${index + 1}. ${q.q}</span>
+          <span class="tagalog-text">${q.t}</span>
         </div>
-        <div class="form-group">
-            <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" required>
+        <div class="options">
+          ${q.a.map((opt, i) => `
+            <label>
+              <input type="radio" name="q${index}" value="${i}"> ${opt}
+            </label>
+          `).join('')}
         </div>
-        <div class="form-group">
-            <label for="phone">Phone Number</label>
-            <input type="tel" id="phone" name="phone">
-        </div>
-        <div class="form-group">
-            <label for="location">Location (City/Province)</label>
-            <input type="text" id="location" name="location">
-        </div>
-        <button type="submit" id="submitBtn">Submit</button>
-    </form>
+      `;
+      container.appendChild(card);
+    });
+  }
 
-    <div id="message"></div>
+  function showResults() {
+    score = 0;
+    questions.forEach((q, index) => {
+      const selected = document.querySelector(`input[name="q${index}"]:checked`);
+      if(selected && parseInt(selected.value) === q.c) score++;
+    });
+    document.getElementById('exam-screen').style.display = 'none';
+    document.getElementById('results-screen').style.display = 'block';
+    document.getElementById('final-score').textContent = `${score} / ${questions.length}`;
+    window.scrollTo(0,0);
+  }
 
-    <script>
-        const form = document.getElementById('regForm');
-        const messageDiv = document.getElementById('message');
-        const submitBtn = document.getElementById('submitBtn');
+  function sendResults() {
+    const name = document.getElementById('f-name').value;
+    const btn = document.getElementById('send-btn');
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
 
-        // ★監督！ここが今回発行した「新しい住所」に書き換わっています
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwEPJnzMqWbDavvD0oRdlGfI9GsgKjj5BZLqIbOBXWpOV2tbco-a6kDjM5vkYC8kcioLA/exec";
+    const data = {
+      name: name,
+      score: score,
+      total: questions.length,
+      report: `[Gabay Exam]\nName: ${name}\nScore: ${score}/20\nDate: ${new Date().toLocaleString()}`
+    };
 
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Sending...';
-            
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
-
-            fetch(WEB_APP_URL, {
-                method: 'POST',
-                mode: 'no-cors', // GASへの送信に必要な設定
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => {
-                messageDiv.style.display = 'block';
-                messageDiv.style.backgroundColor = '#d4edda';
-                messageDiv.style.color = '#155724';
-                messageDiv.innerText = 'Thank you! Your registration has been sent successfully.';
-                form.reset();
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit';
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                messageDiv.style.display = 'block';
-                messageDiv.style.backgroundColor = '#f8d7da';
-                messageDiv.style.color = '#721c24';
-                messageDiv.innerText = 'An error occurred. Please try again.';
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit';
-            });
-        });
-    </script>
+    fetch(WEB_APP_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    }).then(() => {
+      document.getElementById('results-screen').style.display = 'none';
+      document.getElementById('success-screen').style.display = 'block';
+    }).catch(err => {
+      alert("Error sending data. Please try again.");
+      btn.disabled = false;
+      btn.textContent = "Send Result to Admin";
+    });
+  }
+</script>
 </body>
 </html>
