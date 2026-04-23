@@ -171,6 +171,7 @@ input[type=text]:focus{border-color:var(--amber);background:white;}
     <p class="success-sub" id="success-sub"></p>
     <button class="retry-btn" onclick="restartQuiz()" id="retry-btn">もう一度挑戦する / Try Again</button>
   </div>
+
 </div>
 
 <div class="page-footer">
@@ -179,7 +180,7 @@ input[type=text]:focus{border-color:var(--amber);background:white;}
 
 <script>
 /* ───── STATE & CONFIG ───── */
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwEPJnzMqWbDavvD0oRdlGfI9GsgKjj5BZLqIbOBXWpOV2tbco-a6kDjM5vkYC8kcioLA/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyhCuqkSPA2NmBzFKM7TDjq4x9hmOePVLJ5hZY1gRoqG-6OR_2GGHy71S5rAUslEBr1ag/exec";
 
 let lang = 'ja';
 let currentCatJa = 'すべて';
@@ -211,7 +212,7 @@ const ui = {
   },
   resultMsgs: {
     high:  {ja:'素晴らしい結果です！試験合格に向けて準備は万全です。', en:'Outstanding performance! You are well-prepared for the exam.'},
-    mid:   {ja:'良い結果です！間違えた項目を重点的に復習すれば、合格は目の前です。', en:'Good work! Review the missed questions to be fully ready.'},
+    mid:   {ja:'良い結果です！間違えた項目を重点的に復習すれば、合格は目前です。', en:'Good work! Review the missed questions to be fully ready.'},
     low:   {ja:'復習が必要な項目があります。間違えた問題の解説をもう一度読んで、次に挑戦しましょう！', en:'Keep practicing. Focus on the areas you missed and try again!'},
   },
 };
