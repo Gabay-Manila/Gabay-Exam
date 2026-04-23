@@ -648,4 +648,26 @@ function sendResults() {
   const name = document.getElementById('f-name').value.trim();
   const total = filteredQ.length;
   const pct = Math.round((score/total)*100);
-  const payload = { name: name, score: score
+  const payload = { name: name, score: score+'/'+total+' ('+pct+'%)', report: 'Gabay Exam V1.1 Completed' };
+  const btn = document.getElementById('send-btn');
+  btn.textContent = t('sending'); btn.disabled = true;
+  fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) })
+  .then(() => {
+    document.getElementById('results-screen').style.display = 'none';
+    document.getElementById('success-screen').style.display = 'block';
+  });
+}
+
+function setLang(l, btn) {
+  lang = l;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  buildCatTabs(); updateScoreBadge(); renderQuestion();
+}
+
+function restartQuiz() { location.reload(); }
+
+init();
+</script>
+</body>
+</html>
