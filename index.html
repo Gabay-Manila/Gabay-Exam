@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Gabay Exam V1.1 — 特定技能介護 / Care Work Exam</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;300;400&family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600&swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;300;400&family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
   --amber:#EF9F27;--amber-light:#FAEEDA;--amber-dark:#854F0B;
@@ -26,7 +26,7 @@ body{font-family:'Sora',sans-serif;background:var(--paper);color:var(--ink);min-
 .progress-bar-wrap{background:rgba(255,255,255,.1);border-radius:99px;height:4px;max-width:320px;margin:0 auto 8px;}
 .progress-bar-fill{height:100%;border-radius:99px;background:var(--amber);transition:width .4s ease;}
 .progress-label{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.08em;}
-.lang-bar{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:white;border-bottom:0.5px solid var(--border);}
+.lang-bar{display:flex;justify-content:center;align-items:center;gap:16px;padding:10px 16px;background:white;border-bottom:0.5px solid var(--border);}
 .lang-btns{display:flex;gap:6px;}
 .lang-btn{padding:4px 14px;border-radius:99px;border:0.5px solid var(--border-med);font-size:11px;font-family:'Sora',sans-serif;cursor:pointer;background:transparent;color:var(--gray);transition:all .15s;}
 .lang-btn.active{background:var(--amber);color:white;border-color:var(--amber);}
@@ -160,7 +160,7 @@ input[type=text]:focus{border-color:var(--amber);background:white;}
       <div class="submit-title" id="submit-title">学習結果を監督へ送る / Send Results</div>
       <div class="field-label"><span id="req-label">必須 / Required</span> <span id="name-label">受験者名 / Your Name</span></div>
       <input type="text" id="f-name" placeholder="例: Maria Reyes" oninput="validateSend()">
-      <button class="send-btn" id="send-btn" onclick="sendResults()" disabled>監督へ送る — Report to Director</button>
+      <button class="send-btn" id="send-btn" onclick="sendResults()" disabled id="send-btn">監督へ送る — Report to Director</button>
       <p class="send-hint" id="send-hint">名前を入力すると送信できます / Enter your name to submit</p>
     </div>
   </div>
@@ -179,45 +179,10 @@ input[type=text]:focus{border-color:var(--amber);background:white;}
 </div>
 
 <script>
-/* ───── STATE & CONFIG ───── */
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyhCuqkSPA2NmBzFKM7TDjq4x9hmOePVLJ5hZY1gRoqG-6OR_2GGHy71S5rAUslEBr1ag/exec";
 
-let lang = 'ja';
-let currentCatJa = 'すべて';
-let filteredQ = [];
-let currentIdx = 0;
-let answered = false;
-let score = 0;
-let results = [];
-
-const ui = {
-  scoreLabel:    {ja:'正解', en:'Score'},
-  nextBtn:       {ja:'次の問題へ →', en:'Next Question →'},
-  lastBtn:       {ja:'結果を見る →', en:'See Results →'},
-  submitTitle:   {ja:'学習結果を監督へ送る', en:'Send Results to Director'},
-  reqLabel:      {ja:'必須', en:'Required'},
-  nameLabel:     {ja:'受験者名', en:'Your Name'},
-  namePH:        {ja:'例: Maria Reyes', en:'e.g. Maria Reyes'},
-  sendBtn:       {ja:'監督へ送る — Report to Director', en:'Send to Director — Report'},
-  sendHint:      {ja:'名前を入力すると送信できます', en:'Enter your name to submit'},
-  sending:       {ja:'送信中...', en:'Sending...'},
-  successTitle:  {ja:'結果を届けました！', en:'Results Submitted!'},
-  retryBtn:      {ja:'もう一度挑戦する', en:'Try Again'},
-  correctVerdict:{ja:'正解！ Tama!', en:'Correct! / 正解！'},
-  wrongVerdict:  {ja:'不正解 Mali...', en:'Incorrect / 不正解'},
-  resultTitles: {
-    high:  {ja:'優秀！ Napakahusay!', en:'Excellent! / 優秀！'},
-    mid:   {ja:'よくできました！ Magaling!', en:'Well done! / よくできました！'},
-    low:   {ja:'頑張りましょう！ Kaya mo!', en:'Keep going! / 頑張りましょう！'},
-  },
-  resultMsgs: {
-    high:  {ja:'素晴らしい結果です！試験合格に向けて準備は万全です。', en:'Outstanding performance! You are well-prepared for the exam.'},
-    mid:   {ja:'良い結果です！間違えた項目を重点的に復習すれば、合格は目前です。', en:'Good work! Review the missed questions to be fully ready.'},
-    low:   {ja:'復習が必要な項目があります。間違えた問題の解説をもう一度読んで、次に挑戦しましょう！', en:'Keep practicing. Focus on the areas you missed and try again!'},
-  },
-};
-
 const questions = [
+  /* ── 食事介助 ── */
   {
     id:'q01', cat:{ja:'食事介助', en:'Meal Assistance'},
     ja:'利用者が食事中に突然むせ込んでいる',
@@ -230,10 +195,14 @@ const questions = [
     ],
     correct:'C',
     feedback:{
-      ja:'前傾姿勢が誤嚥物の排出を助けます。水を飲ませると気道に入る危険があります。',
-      en:'Leaning forward helps expel aspirated material. Giving water risks pushing it deeper into the airway.'
+      ja:'前傾姿勢（体を前に傾ける）が誤嚥物の排出を助けます。水を飲ませると気道に入る危険があります。背中を叩くことも有効ですが、まず姿勢の調整が優先です。',
+      en:'Leaning the body forward helps expel aspirated material. Giving water risks pushing it deeper into the airway. Patting the back can help, but posture adjustment is the priority.',
     },
-    keyword:{ ja:'誤嚥予防 / 前傾姿勢', en:'Aspiration prevention / Forward tilt' }
+    keyword:{ ja:'誤嚥予防 / 前傾姿勢', en:'Aspiration prevention / Forward tilt posture' },
+    wrong_feedback:{
+      A:{ ja:'水を飲ませると、誤嚥した物がさらに気道深くに入る危険があります。', en:'Giving water may push aspirated material deeper into the airway.' },
+      B:{ ja:'背中を叩くことは補助的に有効ですが、まず前傾姿勢をとらせることが優先です。', en:'Patting the back can help, but forward tilt posture is the priority first step.' },
+    },
   },
   {
     id:'q02', cat:{ja:'食事介助', en:'Meal Assistance'},
@@ -247,15 +216,19 @@ const questions = [
     ],
     correct:'B',
     feedback:{
-      ja:'無理強いせず、落ち着いた環境作りが食欲を引き出します。',
-      en:'Creating a calm environment stimulates appetite without forcing.'
+      ja:'認知症の方の拒食には、無理強いせず気持ちに寄り添うアプローチが有効です。好きな食べ物の話題や落ち着いた環境作りが食欲を引き出します。',
+      en:'For dementia-related food refusal, a gentle empathetic approach works best. Discussing favorite foods and creating a calm environment can stimulate appetite.',
     },
-    keyword:{ ja:'認知症対応 / 本人中心のケア', en:'Dementia care / Person-centered' }
+    keyword:{ ja:'認知症対応 / 本人中心のケア', en:'Dementia care / Person-centered approach' },
+    wrong_feedback:{
+      A:{ ja:'無理に食べさせることは尊厳の侵害であり、誤嚥の危険もあります。', en:'Forcing food violates dignity and risks aspiration.' },
+      C:{ ja:'すぐに下げるのではなく、まず状況に寄り添うアプローチを試みます。', en:'Rather than removing immediately, first try a compassionate approach.' },
+    },
   },
   {
     id:'q03', cat:{ja:'食事介助', en:'Meal Assistance'},
     ja:'嚥下障害のある利用者に水を提供する際の適切な対応は？',
-    en:'Appropriate way to offer water to a resident with dysphagia?',
+    en:'What is the appropriate way to offer water to a resident with dysphagia?',
     tl:'Paano mag-aalok ng tubig sa pasyenteng may hirap sa paglunok?',
     options:[
       { key:'A', ja:'普通の水をコップで提供する', en:'Offer regular water in a cup' },
@@ -264,80 +237,122 @@ const questions = [
     ],
     correct:'B',
     feedback:{
-      ja:'とろみ剤を使って粘度を上げることで、誤嚥を防ぎます。',
-      en:'Using thickening agents helps prevent aspiration.'
+      ja:'嚥下障害では水のような液体が気道に入りやすいため、とろみ剤（増粘剤）を使って粘度を上げます。完全禁止は脱水の危険があります。',
+      en:'With dysphagia, thin liquids easily enter the airway. Thickening agents increase viscosity to prevent this. Completely restricting fluids risks dehydration.',
     },
-    keyword:{ ja:'嚥下障害 / とろみ剤', en:'Dysphagia / Thickening agent' }
+    keyword:{ ja:'嚥下障害 / とろみ剤', en:'Dysphagia / Thickening agent' },
+    wrong_feedback:{
+      A:{ ja:'嚥下障害のある方に普通の水はむせの原因になります。とろみが必要です。', en:'Regular water can cause choking in those with dysphagia. Thickening is needed.' },
+      C:{ ja:'水分を完全に禁止すると脱水になります。とろみをつけて提供します。', en:'Completely restricting fluids causes dehydration. Use thickened liquids instead.' },
+    },
   },
+  /* ── 排泄介助 ── */
   {
     id:'q04', cat:{ja:'排泄介助', en:'Toileting Assistance'},
     ja:'おむつ交換時に褥瘡（床ずれ）の初期症状を発見した',
-    en:'Initial pressure sore symptoms found during diaper change',
+    en:'Initial pressure sore symptoms found during diaper/pad change',
     tl:'Nakakita ng simula ng bedsore habang nagpapalit ng diaper',
     options:[
-      { key:'A', ja:'翌日に報告する', en:'Report tomorrow' },
-      { key:'B', ja:'すぐに上長に報告する', en:'Report to supervisor immediately' },
-      { key:'C', ja:'自分で処置する', en:'Handle it yourself' },
+      { key:'A', ja:'様子を見てから翌日に報告する', en:'Observe and report the next day' },
+      { key:'B', ja:'その場で記録し、上長にすぐ報告する', en:'Document immediately and report to supervisor right away' },
+      { key:'C', ja:'自分でクリームを塗って対処する', en:'Apply cream yourself and handle it' },
     ],
     correct:'B',
-    feedback:{ ja:'早期発見・報告が悪化を防ぐ最善策です。', en:'Early detection and reporting is the best way to prevent worsening.' },
-    keyword:{ ja:'褥瘡 / 早期発見', en:'Pressure sore / Early detection' }
+    feedback:{
+      ja:'褥瘡の初期（発赤期）に早期発見・早期対応することが悪化を防ぎます。発見したらすぐに記録し、看護師・上長への報告が必須です。自己判断での処置は禁止です。',
+      en:'Early detection of pressure sores (redness stage) prevents worsening. Immediate documentation and reporting to a nurse or supervisor is mandatory. Self-treatment is prohibited.',
+    },
+    keyword:{ ja:'褥瘡 / 早期発見・報告', en:'Pressure sore / Early detection & reporting' },
+    wrong_feedback:{
+      A:{ ja:'褥瘡は進行が早く、翌日まで待つと悪化するリスクがあります。', en:'Pressure sores progress quickly. Waiting until the next day risks worsening.' },
+      C:{ ja:'介護士が独自に医療的処置を行うことは禁止されています。必ず報告してください。', en:'Caregivers are prohibited from independently performing medical treatment. Always report.' },
+    },
   },
   {
     id:'q05', cat:{ja:'排泄介助', en:'Toileting Assistance'},
     ja:'排泄介助時、利用者のプライバシーを守る適切な方法は？',
-    en:'How to protect a resident\'s privacy during toileting?',
+    en:"How to protect a resident's privacy during toileting assistance?",
     tl:'Paano mapananatili ang privacy ng pasyente habang tumutulong sa palikuran?',
     options:[
-      { key:'A', ja:'素早く行う', en:'Do it quickly' },
-      { key:'B', ja:'ドアとカーテンを閉める', en:'Close door and curtain' },
-      { key:'C', ja:'2人で介助する', en:'Assist with two people' },
+      { key:'A', ja:'カーテンを開けたまま素早く行う', en:'Do it quickly with the curtain open' },
+      { key:'B', ja:'ドアとカーテンを閉め、できる限り本人が行う部分は見守るだけにする', en:'Close door and curtain; only assist as needed, allowing the resident to do what they can' },
+      { key:'C', ja:'他のスタッフに声をかけてから2人で行う', en:'Call another staff member and assist together' },
     ],
     correct:'B',
-    feedback:{ ja:'ドアとカーテンを閉め、尊厳を守ることが重要です。', en:'Closing doors and curtains is vital to protecting dignity.' },
-    keyword:{ ja:'プライバシー保護', en:'Privacy protection' }
+    feedback:{
+      ja:'排泄はプライバシーへの配慮が最も重要な場面です。ドアとカーテンを必ず閉め、本人ができることは自分でやっていただき、必要最小限の介助にとどめることが尊厳を守ります。',
+      en:'Toileting requires utmost privacy consideration. Always close the door and curtain, allow the resident to do what they can independently, and provide only the minimum necessary assistance.',
+    },
+    keyword:{ ja:'プライバシー / 残存機能の活用', en:'Privacy / Utilizing remaining abilities' },
+    wrong_feedback:{
+      A:{ ja:'カーテンを開けたままでは尊厳の侵害になります。必ず閉めてください。', en:'Leaving the curtain open violates dignity. Always close it.' },
+      C:{ ja:'2人介助は必要な場合もありますが、まず最小限のプライバシー確保が優先です。', en:'Two-person assistance may sometimes be needed, but privacy protection comes first.' },
+    },
   },
+  /* ── 移動・移乗 ── */
   {
     id:'q06', cat:{ja:'移動・移乗', en:'Mobility & Transfer'},
     ja:'ベッドから車椅子への移乗介助で最初に確認すべきことは？',
-    en:'What to check first when transferring to a wheelchair?',
-    tl:'Ano ang unang dapat suriin bago ilipat ang pasyente sa wheelchair?',
+    en:'What should you check first when transferring a resident from bed to wheelchair?',
+    tl:'Ano ang unang dapat suriin bago ilipat ang pasyente mula sa kama papuntang wheelchair?',
     options:[
-      { key:'A', ja:'ブレーキをかけ、フットレストを上げる', en:'Apply brakes and raise footrests' },
-      { key:'B', ja:'素早く持ち上げる', en:'Lift quickly' },
-      { key:'C', ja:'他の人を呼ぶ', en:'Call someone else' },
+      { key:'A', ja:'車椅子のブレーキをかけ、フットレストを上げる', en:'Apply wheelchair brakes and raise footrests' },
+      { key:'B', ja:'利用者の体を素早く持ち上げる', en:'Lift the resident quickly' },
+      { key:'C', ja:'まず他のスタッフを呼ぶ', en:'Call other staff first' },
     ],
     correct:'A',
-    feedback:{ ja:'移乗前のブレーキ確認は転倒事故を防ぐ鉄則です。', en:'Checking brakes before transfer is a fundamental safety rule.' },
-    keyword:{ ja:'移乗 / ブレーキ確認', en:'Transfer / Brake check' }
+    feedback:{
+      ja:'移乗前の安全確認として、車椅子のブレーキをかけることが最重要です。ブレーキをかけないと車椅子が動き転倒の危険があります。フットレストも上げておく必要があります。',
+      en:'Applying wheelchair brakes is the most critical safety check before transfer. Without brakes, the wheelchair may move, causing a fall. Footrests must also be raised.',
+    },
+    keyword:{ ja:'移乗 / ブレーキ確認', en:'Transfer / Brake check' },
+    wrong_feedback:{
+      B:{ ja:'素早く持ち上げることは腰への負担と転落の危険があります。まず安全確認が必要です。', en:'Lifting quickly risks back injury and falls. Safety checks must come first.' },
+      C:{ ja:'まず車椅子の安全確認（ブレーキ・フットレスト）が優先です。', en:'Wheelchair safety checks (brakes and footrests) take priority first.' },
+    },
   },
   {
     id:'q07', cat:{ja:'移動・移乗', en:'Mobility & Transfer'},
     ja:'歩行介助中に利用者がふらついて転倒しそうになった',
-    en:'A resident is about to fall during walking assistance',
+    en:'A resident becomes unsteady and is about to fall during walking assistance',
     tl:'Halos mahulog ang pasyente habang tinutulungan maglakad',
     options:[
-      { key:'A', ja:'腕を強く引っ張る', en:'Pull the arm hard' },
-      { key:'B', ja:'体を支えながらゆっくり床に降ろす', en:'Support body and lower gently' },
-      { key:'C', ja:'助けを呼び離れる', en:'Call for help and leave' },
+      { key:'A', ja:'とっさに腕を強く引っ張る', en:'Quickly and forcefully pull their arm' },
+      { key:'B', ja:'体を支えながらゆっくり床に降ろす', en:'Support their body and gently lower them to the floor' },
+      { key:'C', ja:'大声で助けを呼びながら離れる', en:'Call for help loudly and step away' },
     ],
     correct:'B',
-    feedback:{ ja:'無理に止めず、安全に倒すことが怪我を最小限にします。', en:'Lowering safely rather than forcing a stop minimizes injury.' },
-    keyword:{ ja:'転倒対応 / 安全な着地', en:'Fall response / Safe landing' }
+    feedback:{
+      ja:'転倒を防げない場合は「転倒を防ぐ」より「安全に倒す」ことが重要です。腕を急に引くと骨折の危険があります。体幹を支えながらゆっくり床へ導くことで怪我を最小限にします。',
+      en:'When a fall cannot be prevented, "falling safely" is more important than "preventing the fall." Pulling the arm suddenly risks fractures. Supporting the trunk while guiding gently to the floor minimizes injury.',
+    },
+    keyword:{ ja:'転倒対応 / 安全な着地', en:'Fall response / Safe landing' },
+    wrong_feedback:{
+      A:{ ja:'腕を強く引くと脱臼や骨折の原因になります。', en:'Pulling the arm forcefully can cause dislocation or fracture.' },
+      C:{ ja:'利用者から離れると重大な怪我につながります。まず支えることが大切です。', en:'Stepping away from the resident risks serious injury. Supporting them comes first.' },
+    },
   },
+  /* ── 認知症ケア ── */
   {
     id:'q08', cat:{ja:'認知症ケア', en:'Dementia Care'},
     ja:'認知症の利用者が「家に帰りたい」と繰り返し訴えている',
-    en:'A resident with dementia says "I want to go home"',
-    tl:'Paulit-ulit na nagsasabing "gusto kong umuwi" ang pasyente',
+    en:'A resident with dementia repeatedly says "I want to go home"',
+    tl:'Paulit-ulit na nagsasabing "gusto kong umuwi" ang pasyenteng may demensya',
     options:[
-      { key:'A', ja:'事実を否定する', en:'Deny the fact' },
-      { key:'B', ja:'感情に寄り添い、別の活動に誘う', en:'Empathize and redirect' },
-      { key:'C', ja:'無視する', en:'Ignore' },
+      { key:'A', ja:'「ここがあなたの家ですよ」と強く否定する', en:'Firmly correct them: "This is your home"' },
+      { key:'B', ja:'感情に寄り添い、別の話題や活動に誘う', en:'Empathize with feelings, then gently redirect to another topic or activity' },
+      { key:'C', ja:'無視して他の業務を続ける', en:'Ignore it and continue other tasks' },
     ],
     correct:'B',
-    feedback:{ ja:'感情を否定せず、別の安心できる話題へ誘導します。', en:'Accept feelings and redirect to a calming topic.' },
-    keyword:{ ja:'認知症 / バリデーション', en:'Dementia / Validation' }
+    feedback:{
+      ja:'認知症ケアでは「事実の否定」より「感情の受容」が基本です。「帰りたい気持ち」を受け止めた上で、穏やかに別の活動へ誘導する「バリデーション」「リダイレクション」の技法が有効です。',
+      en:'In dementia care, "validating emotions" is more important than "correcting facts." Acknowledge the desire to go home, then gently redirect using validation and redirection techniques.',
+    },
+    keyword:{ ja:'認知症 / バリデーション・リダイレクション', en:'Dementia / Validation & Redirection' },
+    wrong_feedback:{
+      A:{ ja:'事実を強く否定することは混乱や不安を増大させます。感情を受け止めることが大切です。', en:'Firmly correcting increases confusion and anxiety. Validating emotions is essential.' },
+      C:{ ja:'無視はさらなる不安を招きます。必ず感情に寄り添った対応をしてください。', en:'Ignoring increases anxiety. Always respond with emotional empathy.' },
+    },
   },
   {
     id:'q09', cat:{ja:'認知症ケア', en:'Dementia Care'},
@@ -345,170 +360,262 @@ const questions = [
     en:'A resident with dementia asks the same question repeatedly',
     tl:'Paulit-ulit na nagtatanong ang pasyenteng may demensya',
     options:[
-      { key:'A', ja:'「さっきも聞きました」と言う', en:'Say "You already asked"' },
-      { key:'B', ja:'毎回丁寧に答える', en:'Answer patiently each time' },
-      { key:'C', ja:'無視する', en:'Ignore' },
+      { key:'A', ja:'「さっきも聞きましたよ」と指摘する', en:"Point out: \"You already asked that\"" },
+      { key:'B', ja:'毎回初めて聞くように丁寧に答える', en:"Answer each time as if it's the first time, with patience" },
+      { key:'C', ja:'質問が来たら別の部屋に移動させる', en:'Move them to another room when they start asking' },
     ],
     correct:'B',
-    feedback:{ ja:'本人には毎回「初めての不安」であることを理解しましょう。', en:'Understand that for the resident, each time is a fresh anxiety.' },
-    keyword:{ ja:'記憶障害 / 共感的対応', en:'Memory impairment / Empathy' }
+    feedback:{
+      ja:'認知症の記憶障害による繰り返しの質問は、本人にとっては毎回「初めての不安」です。「また聞いた」と指摘することは羞恥心を与えます。毎回丁寧に、安心できる答えを返すことが適切なケアです。',
+      en:'Repeated questions stem from memory impairment — for the resident, each time is a fresh anxiety. Pointing out repetition causes shame. Answering patiently each time as if new is appropriate care.',
+    },
+    keyword:{ ja:'記憶障害 / 共感的対応', en:'Memory impairment / Empathetic response' },
+    wrong_feedback:{
+      A:{ ja:'「さっきも聞きました」という指摘は、利用者に恥ずかしさや傷つきを与えます。', en:'Saying "you already asked that" causes shame and hurt.' },
+      C:{ ja:'場所を移動させることは問題の解決にならず、不安を高めます。', en:'Moving them does not solve the issue and increases anxiety.' },
+    },
   },
+  /* ── 緊急対応 ── */
   {
     id:'q10', cat:{ja:'緊急対応', en:'Emergency Response'},
-    ja:'利用者が突然意識を失い、反応がない',
-    en:'A resident loses consciousness and is unresponsive',
-    tl:'Bigla na lang nawalan ng malay ang pasyente',
+    ja:'利用者が突然意識を失い、呼びかけに反応しない',
+    en:'A resident suddenly loses consciousness and does not respond to calling',
+    tl:'Bigla na lang nawalan ng malay ang pasyente at hindi sumasagot sa tawag',
     options:[
-      { key:'A', ja:'一人で心肺蘇生を行う', en:'Perform CPR alone' },
-      { key:'B', ja:'助けを呼び、意識・呼吸を確認する', en:'Call for help, check vitals' },
-      { key:'C', ja:'家族に電話する', en:'Call family' },
+      { key:'A', ja:'まず一人で心肺蘇生（CPR）を開始する', en:'Start CPR alone immediately' },
+      { key:'B', ja:'大声で助けを呼び、AEDを依頼しながら意識・呼吸を確認する', en:'Call for help loudly, request AED, and check consciousness and breathing' },
+      { key:'C', ja:'ご家族に連絡してから対応する', en:'Contact the family before taking action' },
     ],
     correct:'B',
-    feedback:{ ja:'まず応援を呼び、安全を確認してチームで対応します。', en:'Call for help first and handle as a team.' },
-    keyword:{ ja:'一次救命処置', en:'First aid / BLS' }
+    feedback:{
+      ja:'緊急時の優先順位：①大声で応援を呼ぶ・AED手配、②意識・呼吸確認、③必要なら胸骨圧迫開始。一人で抱え込まず、チームで対応することが鉄則です。家族連絡は二次的対応です。',
+      en:'Emergency priority: ① Call loudly for help and request AED, ② Check consciousness and breathing, ③ Begin chest compressions if needed. Never handle alone — team response is essential. Family contact is secondary.',
+    },
+    keyword:{ ja:'一次救命処置 / BLS手順', en:'First aid / BLS procedure' },
+    wrong_feedback:{
+      A:{ ja:'一人で対応するのではなく、まず応援とAEDを要請することが最優先です。', en:'Do not handle alone. Calling for help and requesting AED is the top priority.' },
+      C:{ ja:'緊急時は利用者の安全確保が最優先です。家族連絡はその後です。', en:'In emergencies, resident safety is the top priority. Family contact comes after.' },
+    },
   },
   {
     id:'q11', cat:{ja:'緊急対応', en:'Emergency Response'},
-    ja:'利用者が転倒して頭を打ったが、外傷はない',
-    en:'Resident hit their head but no visible injury',
-    tl:'Natamaan ng ulo ang pasyente pero walang sugat',
+    ja:'利用者が転倒して頭を打ったが、外傷は見当たらない',
+    en:'A resident falls and hits their head, but no visible injury is found',
+    tl:'Nahulog at natamaan ng ulo ang pasyente pero walang nakikitang sugat',
     options:[
-      { key:'A', ja:'様子を見る', en:'Observe' },
-      { key:'B', ja:'すぐに報告しバイタルを測る', en:'Report immediately and check vitals' },
-      { key:'C', ja:'大丈夫と言うので放置する', en:'Leave as they say they are fine' },
+      { key:'A', ja:'外傷がないので様子を見てよい', en:'No visible injury, so just observe' },
+      { key:'B', ja:'すぐに上長・看護師に報告し、バイタルサインを測定する', en:'Report to supervisor/nurse immediately and measure vital signs' },
+      { key:'C', ja:'利用者に「大丈夫ですか」と聞いて、大丈夫と言えば終了', en:'Ask "Are you okay?" and finish if they say yes' },
     ],
     correct:'B',
-    feedback:{ ja:'頭部打撲は内出血の危険があるため報告が必須です。', en:'Internal bleeding is a risk; reporting is mandatory.' },
-    keyword:{ ja:'頭部外傷 / 報告', en:'Head trauma / Reporting' }
+    feedback:{
+      ja:'頭部打撲は外傷がなくても脳内出血が起きている可能性があります。意識レベル・瞳孔・バイタルサインの変化が重要です。必ずすぐに報告し、経過観察の指示を受けることが必要です。',
+      en:'Head trauma can cause internal bleeding even without visible injury. Changes in consciousness level, pupils, and vital signs are critical. Always report immediately and receive monitoring instructions.',
+    },
+    keyword:{ ja:'頭部外傷 / 内部出血リスク', en:'Head trauma / Internal bleeding risk' },
+    wrong_feedback:{
+      A:{ ja:'外傷がなくても脳内出血の危険があります。必ず報告してください。', en:'Internal bleeding is possible even without visible injury. Always report.' },
+      C:{ ja:'本人が「大丈夫」と言っても、医療的な判断は看護師が行います。報告は必須です。', en:"Even if the resident says \"I'm fine,\" medical assessment is the nurse's role. Reporting is mandatory." },
+    },
   },
+  /* ── 感染予防 ── */
   {
     id:'q12', cat:{ja:'感染予防', en:'Infection Prevention'},
-    ja:'嘔吐物を処理する際の正しい対応は？',
-    en:'Correct way to handle vomit?',
-    tl:'Paano ang tamang pamamaraan sa paglilinis ng suka?',
+    ja:'ノロウイルス感染者の嘔吐物を処理する際の正しい手順は？',
+    en:'What is the correct procedure for handling vomit from a norovirus patient?',
+    tl:'Paano ang tamang pamamaraan sa paglilinis ng suka ng pasyenteng may norovirus?',
     options:[
-      { key:'A', ja:'素手で拭く', en:'Wipe with bare hands' },
-      { key:'B', ja:'手袋・マスクをし、塩素系で消毒する', en:'Wear PPE and use chlorine bleach' },
-      { key:'C', ja:'アルコールで拭く', en:'Wipe with alcohol' },
+      { key:'A', ja:'素手でティッシュを使い素早く拭き取る', en:'Wipe up quickly with tissues using bare hands' },
+      { key:'B', ja:'手袋・マスク・ガウンを着用し、次亜塩素酸ナトリウムで消毒する', en:'Wear gloves, mask, and gown; disinfect with sodium hypochlorite solution' },
+      { key:'C', ja:'換気してしばらく待ってから片付ける', en:'Ventilate and wait a while before cleaning up' },
     ],
     correct:'B',
-    feedback:{ ja:'ウイルス拡散を防ぐため塩素系消毒剤を使います。', en:'Use chlorine-based disinfectants to prevent virus spread.' },
-    keyword:{ ja:'ノロウイルス / 消毒', en:'Norovirus / Disinfection' }
+    feedback:{
+      ja:'ノロウイルスはアルコールに抵抗性があり、次亜塩素酸ナトリウム（塩素系漂白剤）での消毒が必要です。処理時は手袋・マスク・ガウンの着用が必須。処理後は使い捨て手袋を外して手洗いします。',
+      en:'Norovirus is resistant to alcohol. Sodium hypochlorite (chlorine bleach) is required for disinfection. Gloves, mask, and gown are mandatory. Remove disposable gloves after handling and wash hands thoroughly.',
+    },
+    keyword:{ ja:'ノロウイルス / 次亜塩素酸ナトリウム', en:'Norovirus / Sodium hypochlorite' },
+    wrong_feedback:{
+      A:{ ja:'素手での処理は感染リスクが非常に高く、絶対に避けてください。', en:'Bare-hand contact carries extremely high infection risk. Never do this.' },
+      C:{ ja:'嘔吐物は空気中にウイルスが拡散するため、できるだけ早く適切に処理する必要があります。', en:'Vomit spreads virus particles into the air. Clean up promptly and correctly.' },
+    },
   },
   {
     id:'q13', cat:{ja:'感染予防', en:'Infection Prevention'},
-    ja:'正しい手洗いのタイミングは？',
-    en:'Correct timing for handwashing?',
-    tl:'Kailan ang tamang oras ng paghuhugas ng kamay?',
+    ja:'介護業務中に正しい手洗いのタイミングはどれか？',
+    en:'When is the correct timing for handwashing during care work?',
+    tl:'Kailan ang tamang oras ng paghuhugas ng kamay sa pag-aalaga?',
     options:[
-      { key:'A', ja:'終了時のみ', en:'End of shift only' },
-      { key:'B', ja:'ケアの前後、汚染物の処理後', en:'Before/after care and handling waste' },
-      { key:'C', ja:'汚れた時だけ', en:'Only when dirty' },
+      { key:'A', ja:'業務開始時と終了時のみ', en:'Only at the start and end of the shift' },
+      { key:'B', ja:'汚染された可能性のある作業の前後、利用者に触れる前後', en:'Before and after potentially contaminated tasks; before and after touching residents' },
+      { key:'C', ja:'手が目に見えて汚れた時だけ', en:'Only when hands are visibly dirty' },
     ],
     correct:'B',
-    feedback:{ ja:'利用者への接触前後が感染拡大防止の要です。', en:'Before and after resident contact is key to preventing spread.' },
-    keyword:{ ja:'手指衛生', en:'Hand hygiene' }
+    feedback:{
+      ja:'WHOの「手指衛生の5つのタイミング」：①患者に触れる前、②清潔/無菌操作の前、③体液に触れた後、④患者に触れた後、⑤患者の周辺環境に触れた後。介護でも同じ原則が適用されます。',
+      en:"WHO's '5 Moments for Hand Hygiene': ① Before touching a patient, ② Before clean/aseptic procedures, ③ After body fluid exposure, ④ After touching a patient, ⑤ After touching patient surroundings.",
+    },
+    keyword:{ ja:'手指衛生 / 5つのタイミング', en:'Hand hygiene / WHO 5 Moments' },
+    wrong_feedback:{
+      A:{ ja:'開始・終了時だけでは不十分です。利用者ごとに手洗いが必要です。', en:'Start and end of shift only is insufficient. Handwashing is needed between each resident.' },
+      C:{ ja:'目に見えない汚染（ウイルス・細菌）の方が危険です。見た目に関わらず適切なタイミングで手洗いします。', en:'Invisible contamination (viruses, bacteria) is more dangerous. Wash hands at appropriate times regardless of visible dirt.' },
+    },
   },
+  /* ── コミュニケーション ── */
   {
     id:'q14', cat:{ja:'コミュニケーション', en:'Communication'},
     ja:'利用者が「死にたい」とつぶやいた',
-    en:'Resident says "I want to die"',
-    tl:'Sinabi ng pasyente na "gusto ko nang mamatay"',
+    en:'A resident whispers "I want to die"',
+    tl:'Bumulong ang pasyente na "gusto ko nang mamatay"',
     options:[
-      { key:'A', ja:'否定する', en:'Deny' },
-      { key:'B', ja:'励ます', en:'Encourage' },
-      { key:'C', ja:'寄り添い、報告する', en:'Listen and report' },
+      { key:'A', ja:'「そんなこと言わないでください」と否定する', en:"Dismiss it: 'Please don't say such things'" },
+      { key:'B', ja:'「気のせいですよ」と気をそらす', en:'Distract with "You\'re just imagining it"' },
+      { key:'C', ja:'真剣に受け止め、気持ちに寄り添いながら上長・看護師に報告する', en:'Take it seriously, empathize with feelings, and report to supervisor/nurse' },
     ],
     correct:'C',
-    feedback:{ ja:'安易に否定せず、辛い気持ちを受け止め報告します。', en:'Do not dismiss; accept their pain and report to staff.' },
-    keyword:{ ja:'傾聴 / 報告', en:'Active listening / Reporting' }
+    feedback:{
+      ja:'「死にたい」という言葉は、強い孤独・苦痛・絶望のサインです。否定や無視をせず、まず「つらいですね」と気持ちを受け止めます。必ず上長や看護師に報告し、専門的なサポートにつなげることが重要です。',
+      en:'"I want to die" signals intense loneliness, pain, or despair. Do not dismiss or ignore. First acknowledge with empathy, then always report to supervisor/nurse for professional support.',
+    },
+    keyword:{ ja:'自殺予防 / 傾聴・報告', en:'Suicide prevention / Active listening & reporting' },
+    wrong_feedback:{
+      A:{ ja:'否定すると本人が「わかってもらえない」と感じ、さらに孤立します。', en:'Dismissing makes the resident feel misunderstood, deepening isolation.' },
+      B:{ ja:'気をそらすことは根本的な苦痛を無視することになります。', en:'Distracting ignores the underlying pain.' },
+    },
   },
   {
     id:'q15', cat:{ja:'コミュニケーション', en:'Communication'},
-    ja:'難聴の利用者との話し方は？',
-    en:'How to speak with a hard-of-hearing resident?',
-    tl:'Paano makipag-usap sa pasyenteng hirap makinig?',
+    ja:'聴覚障害のある利用者とコミュニケーションをとる際の適切な方法は？',
+    en:'What is the appropriate communication method with a hearing-impaired resident?',
+    tl:'Paano makipag-usap sa pasyenteng may kapansanan sa pandinig?',
     options:[
-      { key:'A', ja:'大声で叫ぶ', en:'Shout loudly' },
-      { key:'B', ja:'正面で向き合いゆっくり話す', en:'Face them and speak slowly' },
-      { key:'C', ja:'耳元でささやく', en:'Whisper in their ear' },
+      { key:'A', ja:'大声でゆっくり話す', en:'Speak loudly and slowly' },
+      { key:'B', ja:'正面から向き合い、口の動きが見えるようにゆっくり話す・筆談を活用する', en:"Face them directly, speak slowly so they can read lips, and use written communication" },
+      { key:'C', ja:'代わりに家族に伝言してもらう', en:'Ask family members to relay messages instead' },
     ],
     correct:'B',
-    feedback:{ ja:'口の動きを見せ、表情豊かにゆっくり話します。', en:'Speak slowly while showing your lip movements and expressions.' },
-    keyword:{ ja:'難聴対応', en:'Hearing impairment' }
+    feedback:{
+      ja:'聴覚障害のある方には、正面から向き合い口形が見えるようにすることが基本です。大声は歪みを生じることがあります。筆談、ジェスチャー、補聴器の確認なども重要なアプローチです。',
+      en:'For hearing-impaired residents, facing them directly so they can read lips is fundamental. Shouting can distort sound. Written notes, gestures, and checking hearing aids are also important approaches.',
+    },
+    keyword:{ ja:'聴覚障害 / 口話法・筆談', en:'Hearing impairment / Lip reading & written notes' },
+    wrong_feedback:{
+      A:{ ja:'大声は音の歪みが生じ、かえって聞き取りにくくなることがあります。', en:'Shouting can distort sound and make it harder to understand.' },
+      C:{ ja:'本人との直接コミュニケーションが基本です。家族への依存は本人の尊厳を損ないます。', en:'Direct communication with the resident is fundamental. Relying on family undermines their dignity.' },
+    },
   },
+  /* ── 記録・報告 ── */
   {
     id:'q16', cat:{ja:'記録・報告', en:'Recording & Reporting'},
-    ja:'記録の書き方として適切なのは？',
-    en:'Appropriate way to write records?',
-    tl:'Ano ang tamang paraan ng pagsulat ng rekord?',
+    ja:'介護記録を書く際の正しい姿勢はどれか？',
+    en:'Which is the correct approach when writing care records?',
+    tl:'Ano ang tamang paraan ng pagsulat ng rekord sa pag-aalaga?',
     options:[
-      { key:'A', ja:'まとめて書く', en:'Write all at once' },
-      { key:'B', ja:'事実を客観的にすぐ書く', en:'Write facts objectively and immediately' },
-      { key:'C', ja:'想像で書く', en:'Write based on imagination' },
+      { key:'A', ja:'後で思い出して書くので、夜勤終了時にまとめて記録する', en:'Write everything together at the end of the night shift from memory' },
+      { key:'B', ja:'ケア実施後できるだけ早く、事実を客観的に記録する', en:'Record as soon as possible after care, objectively and factually' },
+      { key:'C', ja:'利用者が良く見えるように主観的な表現を多用する', en:'Use many subjective expressions to make the resident look good' },
     ],
     correct:'B',
-    feedback:{ ja:'鮮明な記憶のうちに客観的事実を記録します。', en:'Record objective facts while memory is fresh.' },
-    keyword:{ ja:'記録の原則', en:'Documentation principles' }
+    feedback:{
+      ja:'介護記録は「事実を正確・客観的・速やかに」記録することが原則です。時間が経つと記憶が曖昧になり、誤記のリスクが高まります。主観的な表現より「〇〇を確認」「〇〇の様子が見られた」等の客観的表現を使います。',
+      en:'Care records must be "accurate, objective, and timely." Delays increase the risk of memory errors. Use objective expressions like "confirmed ○○" or "observed ○○" rather than subjective descriptions.',
+    },
+    keyword:{ ja:'介護記録 / 客観的・即時記録', en:'Care records / Objective & timely documentation' },
+    wrong_feedback:{
+      A:{ ja:'時間が経つほど記憶が曖昧になります。できるだけ早く記録することが原則です。', en:'Memory fades with time. Record as soon as possible after care.' },
+      C:{ ja:'介護記録は法的文書です。主観的な表現や虚偽の記録は許されません。', en:'Care records are legal documents. Subjective or false entries are not permitted.' },
+    },
   },
   {
     id:'q17', cat:{ja:'記録・報告', en:'Recording & Reporting'},
-    ja:'微熱など異変を見つけたら？',
-    en:'What to do if you find a slight fever?',
-    tl:'Ano ang gagawin pag may napansing kakaiba?',
+    ja:'利用者の状態に気になる変化（微熱・食欲低下など）を発見した場合の対応は？',
+    en:"What should you do when you notice a concerning change in a resident's condition?",
+    tl:'Ano ang gagawin pag napansin mo ang pagbabago sa kondisyon ng pasyente?',
     options:[
-      { key:'A', ja:'様子を見る', en:'Observe' },
-      { key:'B', ja:'薬を飲ませる', en:'Give medicine' },
-      { key:'C', ja:'報告し、バイタルを測る', en:'Report and check vitals' },
+      { key:'A', ja:'自分の判断で市販薬を飲ませる', en:'Give over-the-counter medicine at your own discretion' },
+      { key:'B', ja:'翌日の担当者に申し送りで伝える', en:"Pass the information to the next day's staff during handover" },
+      { key:'C', ja:'速やかに上長・看護師に報告し、バイタルを測定・記録する', en:'Promptly report to supervisor/nurse and measure and document vital signs' },
     ],
     correct:'C',
-    feedback:{ ja:'自分での判断は禁物。すぐに看護師へ繋ぎます。', en:'Avoid personal judgment. Immediately notify the nurse.' },
-    keyword:{ ja:'早期報告', en:'Early reporting' }
+    feedback:{
+      ja:'「報告・連絡・相談（ほうれんそう）」は介護の基本です。特に健康状態の変化は早期発見・早期対応が重要で、介護職員が独自に医療的判断を行うことは禁止です。バイタル測定とその場での報告が適切な対応です。',
+      en:'"Horenso" (report, contact, consult) is a fundamental principle. Health changes require early detection and response. Care workers are prohibited from making independent medical decisions. Measure vitals and report immediately.',
+    },
+    keyword:{ ja:'報告・連絡・相談 / ほうれんそう', en:'Report, Contact, Consult / Horenso' },
+    wrong_feedback:{
+      A:{ ja:'介護職員が医療的判断や投薬を独自に行うことは違法です。', en:'Caregivers independently making medical decisions or administering medication is illegal.' },
+      B:{ ja:'状態変化は翌日まで待たず、発見したその場で報告することが必要です。', en:'Changes in condition should not wait until the next day. Report immediately upon discovery.' },
+    },
   },
+  /* ── 虐待防止 ── */
   {
     id:'q18', cat:{ja:'虐待防止', en:'Abuse Prevention'},
-    ja:'ナースコールを繰り返す利用者への対応',
-    en:'Responding to repeated nurse calls',
-    tl:'Paulit-ulit na pagpindot ng nurse call',
+    ja:'忙しいときに利用者がナースコールを何度も押す。適切な対応は？',
+    en:'A resident repeatedly presses the nurse call while you are busy. What should you do?',
+    tl:'Paulit-ulit na pinipindot ng pasyente ang nurse call habang abala ka. Ano ang gagawin?',
     options:[
-      { key:'A', ja:'怒鳴る', en:'Shout' },
-      { key:'B', ja:'スイッチを遠ざける', en:'Move switch away' },
-      { key:'C', ja:'気持ちを聴き、対応する', en:'Listen and respond' },
+      { key:'A', ja:'「さっきも来たでしょう」と怒った口調で伝える', en:"Say in an annoyed tone: 'I was just here'" },
+      { key:'B', ja:'ナースコールを届かないところに置く', en:'Place the nurse call out of their reach' },
+      { key:'C', ja:'「すぐ参ります」と伝え、できるだけ早く対応する', en:'Say "I\'ll be right there" and respond as soon as possible' },
     ],
     correct:'C',
-    feedback:{ ja:'スイッチを遠ざける行為は身体拘束にあたります。', en:'Moving the call button away is a form of restraint.' },
-    keyword:{ ja:'心理的虐待防止', en:'Preventing abuse' }
+    feedback:{
+      ja:'何度もナースコールを押す背景には、不安・痛み・孤独感などがある場合が多いです。怒った対応や機器の遠ざけは「心理的虐待」「行動制限」にあたります。「すぐ参ります」という言葉と迅速な対応が基本です。',
+      en:'Repeatedly pressing the call button often reflects anxiety, pain, or loneliness. Responding with anger or moving the device constitutes psychological abuse or behavioral restriction. "I\'ll be right there" and prompt response is standard.',
+    },
+    keyword:{ ja:'心理的虐待の防止 / ナースコール対応', en:'Preventing psychological abuse / Nurse call response' },
+    wrong_feedback:{
+      A:{ ja:'怒った口調での対応は「心理的虐待」に該当する可能性があります。', en:'An angry tone may constitute psychological abuse.' },
+      B:{ ja:'ナースコールを遠ざけることは「行動制限（身体的拘束に準じる行為）」にあたります。', en:'Moving the call button out of reach constitutes behavioral restriction, equivalent to physical restraint.' },
+    },
   },
   {
     id:'q19', cat:{ja:'虐待防止', en:'Abuse Prevention'},
-    ja:'同僚の虐待を目撃したら？',
-    en:'Witnessing abuse by a colleague?',
-    tl:'Nakita mong inaalipusta ang pasyente',
+    ja:'同僚が利用者に対して乱暴な言葉遣いをしているのを目撃した',
+    en:'You witness a colleague using harsh language toward a resident',
+    tl:'Nakita mong gumagamit ng marahas na salita ang kasamahan mo sa pasyente',
     options:[
-      { key:'A', ja:'見て見ぬふり', en:'Ignore' },
-      { key:'B', ja:'その場で止め、報告する', en:'Stop it and report' },
-      { key:'C', ja:'SNSに投稿する', en:'Post on SNS' },
+      { key:'A', ja:'自分には関係ないので無視する', en:"Ignore it as it's not your concern" },
+      { key:'B', ja:'その場で止め、後で上長に報告する', en:'Stop it on the spot and report to supervisor later' },
+      { key:'C', ja:'利用者家族に直接連絡する', en:"Contact the resident's family directly" },
     ],
     correct:'B',
-    feedback:{ ja:'利用者を守ること、そして通報することが法的な義務です。', en:'Protecting the resident and reporting is a legal duty.' },
-    keyword:{ ja:'通報義務', en:'Duty to report' }
+    feedback:{
+      ja:'虐待を発見した場合、介護士には「通報義務」があります。まずその場で穏やかに止め（同僚への直接介入）、その後速やかに上長や施設の虐待防止委員会へ報告することが法的義務です。家族への直接連絡より施設内報告が優先です。',
+      en:"When abuse is discovered, caregivers have a legal duty to report. First calmly intervene on the spot, then promptly report to supervisor or the facility's abuse prevention committee. Internal reporting takes priority over direct family contact.",
+    },
+    keyword:{ ja:'虐待防止 / 通報義務', en:'Abuse prevention / Mandatory reporting' },
+    wrong_feedback:{
+      A:{ ja:'虐待の見て見ぬふりは「放置」であり、法的・倫理的に許されません。', en:'Ignoring abuse is "negligence" and is neither legally nor ethically acceptable.' },
+      C:{ ja:'まず施設内での報告（上長・虐待防止委員会）が優先されます。', en:'Internal reporting (supervisor or abuse prevention committee) takes priority.' },
+    },
   },
   {
     id:'q20', cat:{ja:'虐待防止', en:'Abuse Prevention'},
-    ja:'「安全のため」に縛るよう指示された',
-    en:'Instructed to restrain "for safety"',
-    tl:'Inutusan kang itali ang pasyente',
+    ja:'「利用者の安全のため」という理由で、ベッドに縛ることを上長から指示された',
+    en:'A supervisor instructs you to restrain a resident in bed "for their safety"',
+    tl:'Inutusan ka ng superior mong itali ang pasyente "para sa kaligtasan nito"',
     options:[
-      { key:'A', ja:'従う', en:'Follow' },
-      { key:'B', ja:'原則禁止を伝え、代案を出す', en:'State it\'s prohibited and propose alternatives' },
-      { key:'C', ja:'きつく縛る', en:'Tie tightly' },
+      { key:'A', ja:'上長の指示なので従う', en:'Follow the instruction since it comes from a supervisor' },
+      { key:'B', ja:'緊急やむを得ない場合を除き、身体拘束は原則禁止であることを伝え、別の方法を提案する', en:'Inform that physical restraint is prohibited in principle except in urgent necessity, and propose alternatives' },
+      { key:'C', ja:'利用者に怪我がなければ問題ないと判断する', en:'Judge it acceptable as long as the resident is not injured' },
     ],
     correct:'B',
-    feedback:{ ja:'身体拘束は尊厳を奪う行為です。原則禁止です。', en:'Physical restraint strips away dignity; it is prohibited in principle.' },
-    keyword:{ ja:'身体拘束禁止', en:'Restraint prohibition' }
-  }
+    feedback:{
+      ja:'身体拘束は「切迫性・非代替性・一時性」の3要件をすべて満たす場合のみ、医師・本人・家族の同意のもとで認められます。上長の指示であっても違法な行為には従う義務はなく、介護職員にも異議申し立ての責任があります。',
+      en:'Physical restraint is only permitted when all three conditions are met: urgency, no alternative, and temporary nature — with consent from doctor, resident, and family. Even with supervisor instructions, there is no duty to follow illegal orders. Care workers have a responsibility to object.',
+    },
+    keyword:{ ja:'身体拘束禁止 / 3要件', en:'Restraint prohibition / 3 conditions' },
+    wrong_feedback:{
+      A:{ ja:'上長の指示でも違法行為には従う義務はありません。身体拘束は原則禁止です。', en:'Even supervisor instructions do not require following illegal acts. Physical restraint is prohibited in principle.' },
+      C:{ ja:'怪我の有無に関係なく、不当な身体拘束は「身体的虐待」にあたります。', en:'Regardless of injury, unjustified physical restraint constitutes physical abuse.' },
+    },
+  },
 ];
 
+/* ══════════════════════════════════════
+   CATEGORIES — bilingual
+══════════════════════════════════════ */
 const catList = [
   {ja:'すべて', en:'All'},
   {ja:'食事介助', en:'Meal Assistance'},
@@ -522,9 +629,51 @@ const catList = [
   {ja:'虐待防止', en:'Abuse Prevention'},
 ];
 
-/* ───── LOGIC ───── */
+/* ══════════════════════════════════════
+   STATE
+══════════════════════════════════════ */
+let lang = 'ja';
+let currentCatJa = 'すべて';
+let filteredQ = [];
+let currentIdx = 0;
+let answered = false;
+let score = 0;
+let results = [];
+
+/* ══════════════════════════════════════
+   LANGUAGE HELPERS
+══════════════════════════════════════ */
+const ui = {
+  scoreLabel:   {ja:'正解', en:'Score'},
+  nextBtn:      {ja:'次の問題へ →', en:'Next Question →'},
+  lastBtn:      {ja:'結果を見る →', en:'See Results →'},
+  submitTitle:  {ja:'学習結果を監督へ送る', en:'Send Results to Director'},
+  reqLabel:     {ja:'必須', en:'Required'},
+  nameLabel:    {ja:'受験者名', en:'Your Name'},
+  namePH:       {ja:'例: Maria Reyes', en:'e.g. Maria Reyes'},
+  sendBtn:      {ja:'監督へ送る — Report to Director', en:'Send to Director — Report'},
+  sendHint:     {ja:'名前を入力すると送信できます', en:'Enter your name to submit'},
+  sending:      {ja:'送信中...', en:'Sending...'},
+  successTitle: {ja:'結果を届けました！', en:'Results Submitted!'},
+  retryBtn:     {ja:'もう一度挑戦する', en:'Try Again'},
+  correctVerdict:{ja:'正解！ Tama!', en:'Correct! / 正解！'},
+  wrongVerdict:  {ja:'不正解 Mali...', en:'Incorrect / 不正解'},
+  resultTitles: {
+    high:  {ja:'優秀！ Napakahusay!', en:'Excellent! / 優秀！'},
+    mid:   {ja:'よくできました！ Magaling!', en:'Well done! / よくできました！'},
+    low:   {ja:'頑張りましょう！ Kaya mo!', en:'Keep going! / 頑張りましょう！'},
+  },
+  resultMsgs: {
+    high:  {ja:'素晴らしい結果です！試験合格に向けて準備は万全です。', en:'Outstanding performance! You are well-prepared for the exam.'},
+    mid:   {ja:'良い結果です！間違えた項目を重点的に復習すれば、合格は目前です。', en:'Good work! Review the missed questions to be fully ready.'},
+    low:   {ja:'復習が必要な項目があります。間違えた問題の解説をもう一度読んで、次に挑戦しましょう！', en:'Keep practicing. Focus on the areas you missed and try again!'},
+  },
+};
 const t = key => ui[key]?.[lang] ?? ui[key]?.ja ?? '';
 
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
 function init() {
   buildCatTabs();
   filterAndStart();
@@ -562,19 +711,31 @@ function filterAndStart() {
   renderQuestion();
 }
 
+/* ══════════════════════════════════════
+   RENDER QUESTION
+══════════════════════════════════════ */
 function renderQuestion() {
   if (currentIdx >= filteredQ.length) { showResults(); return; }
   answered = false;
   const q = filteredQ[currentIdx];
   const total = filteredQ.length;
+
   const pct = Math.round((currentIdx/total)*100);
   document.getElementById('progress-fill').style.width = pct+'%';
   document.getElementById('progress-label').textContent = currentIdx+' / '+total;
+
   const catName = lang==='en' ? q.cat.en : q.cat.ja;
-  document.getElementById('q-number').innerHTML = `Q ${currentIdx+1} / ${total}`;
+  document.getElementById('q-number').innerHTML =
+    `Q ${currentIdx+1} / ${total} <span style="font-size:9px;opacity:.6;font-weight:400;margin-left:4px;">${catName}</span>`;
   document.getElementById('q-cat-pill').textContent = catName;
   document.getElementById('q-situation').textContent = lang==='en' ? q.en : q.ja;
   document.getElementById('q-tagalog').textContent = '🇵🇭 ' + q.tl;
+
+  const qc = document.getElementById('q-card');
+  qc.classList.remove('slide-up');
+  void qc.offsetWidth;
+  qc.classList.add('slide-up');
+
   const wrap = document.getElementById('options-wrap');
   wrap.innerHTML = q.options.map(o => {
     const txt = lang==='en' ? o.en : o.ja;
@@ -583,10 +744,15 @@ function renderQuestion() {
       <span class="opt-body">${txt}</span>
     </button>`;
   }).join('');
-  document.getElementById('feedback-box').style.display='none';
+
+  const fb = document.getElementById('feedback-box');
+  fb.style.display='none'; fb.className='feedback-box';
   document.getElementById('next-btn-wrap').style.display='none';
 }
 
+/* ══════════════════════════════════════
+   CHOOSE OPTION
+══════════════════════════════════════ */
 function chooseOption(key) {
   if (answered) return;
   answered = true;
@@ -594,79 +760,245 @@ function chooseOption(key) {
   const isCorrect = key === q.correct;
   if (isCorrect) score++;
   results.push({id:q.id, cat:q.cat.ja, correct:isCorrect, chosen:key, rightKey:q.correct});
+
   document.querySelectorAll('.option-btn').forEach(btn => {
     btn.disabled = true;
     const k = btn.querySelector('.opt-key').textContent;
     if (k === q.correct) btn.classList.add('correct');
-    else if (k === key && !isCorrect) btn.classList.add('wrong');
+    else if (k === key && !isCorrect) { btn.classList.add('wrong'); btn.classList.add('shake'); }
     else btn.classList.add('neutral-dim');
   });
+
   const fb = document.getElementById('feedback-box');
   fb.style.display='block';
   fb.className='feedback-box slide-up '+(isCorrect?'correct':'wrong');
+
   document.getElementById('fb-icon').textContent = isCorrect ? '✓' : '✗';
-  const vd = document.getElementById('fb-verdict');
-  vd.textContent = isCorrect ? t('correctVerdict') : t('wrongVerdict');
-  document.getElementById('fb-text').textContent = lang==='en' ? q.feedback.en : q.feedback.ja;
-  document.getElementById('fb-keyword').textContent = '🔑 '+(lang==='en' ? q.keyword.en : q.keyword.ja);
+
+  const verdictEl = document.getElementById('fb-verdict');
+  verdictEl.className = 'feedback-verdict '+(isCorrect?'feedback-correct':'feedback-wrong');
+  verdictEl.textContent = isCorrect ? t('correctVerdict') : t('wrongVerdict');
+
+  let fbText = '';
+  if (!isCorrect && q.wrong_feedback?.[key]) {
+    fbText = (lang==='en' ? q.wrong_feedback[key].en : q.wrong_feedback[key].ja) + '\n\n';
+  }
+  fbText += lang==='en' ? q.feedback.en : q.feedback.ja;
+  document.getElementById('fb-text').textContent = fbText;
+  document.getElementById('fb-keyword').textContent =
+    '🔑 ' + (lang==='en' ? q.keyword.en : q.keyword.ja);
+
   updateScoreBadge();
-  document.getElementById('next-btn-wrap').style.display='block';
+
+  const nw = document.getElementById('next-btn-wrap');
+  nw.style.display='block';
   const isLast = currentIdx+1 >= filteredQ.length;
   document.getElementById('next-btn').textContent = isLast ? t('lastBtn') : t('nextBtn');
+
+  requestAnimationFrame(()=>{ requestAnimationFrame(()=>{
+    fb.scrollIntoView({behavior:'smooth', block:'nearest'});
+  });});
 }
 
 function nextQuestion() {
-  currentIdx++; renderQuestion();
+  currentIdx++;
+  renderQuestion();
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
 function updateScoreBadge() {
-  document.getElementById('score-badge').textContent = t('scoreLabel')+' '+score+' / '+results.length;
+  document.getElementById('score-badge').textContent =
+    t('scoreLabel')+' '+score+' / '+results.length;
 }
 
+/* ══════════════════════════════════════
+   RESULTS
+══════════════════════════════════════ */
 function showResults() {
   document.getElementById('quiz-area').style.display='none';
   document.getElementById('results-screen').style.display='block';
+
   const total = filteredQ.length;
   const pct = Math.round((score/total)*100);
+  document.getElementById('progress-fill').style.width='100%';
+  document.getElementById('progress-label').textContent=total+' / '+total;
   document.getElementById('res-score').textContent=score;
   document.getElementById('res-denom').textContent='/ '+total;
+
   const tier = pct>=90?'high':pct>=70?'mid':'low';
   document.getElementById('res-title').textContent = ui.resultTitles[tier][lang];
   document.getElementById('res-msg').textContent   = ui.resultMsgs[tier][lang];
+
+  // Breakdown
+  const catMap={};
+  results.forEach(r=>{
+    if(!catMap[r.cat]) catMap[r.cat]={correct:0,total:0};
+    catMap[r.cat].total++;
+    if(r.correct) catMap[r.cat].correct++;
+  });
+  let bHTML='';
+  for(const [cat,d] of Object.entries(catMap)){
+    const p=Math.round((d.correct/d.total)*100);
+    const cls=p===100?'perfect':p>=60?'good':'needs';
+    const label=p===100?'✓':p>=60?'△':'✗';
+    // Show bilingual cat name
+    const catObj = catList.find(c=>c.ja===cat);
+    const catDisplay = lang==='en' ? (catObj?.en||cat) : cat;
+    bHTML+=`<div class="breakdown-row">
+      <span class="breakdown-cat">${catDisplay}</span>
+      <span class="breakdown-score ${cls}">${label} ${d.correct}/${d.total}</span>
+    </div>`;
+  }
+  document.getElementById('res-breakdown').innerHTML=bHTML;
+
+  // UI strings
   document.getElementById('submit-title').textContent = t('submitTitle');
+  document.getElementById('req-label').textContent    = t('reqLabel');
   document.getElementById('name-label').textContent   = t('nameLabel');
-  document.getElementById('send-btn').textContent      = t('sendBtn');
+  document.getElementById('f-name').placeholder       = t('namePH');
+  document.getElementById('send-btn').textContent     = t('sendBtn');
+  document.getElementById('send-hint').textContent    = t('sendHint');
+
   validateSend();
 }
 
+/* ══════════════════════════════════════
+   SEND
+══════════════════════════════════════ */
 function validateSend() {
   const name = document.getElementById('f-name').value.trim();
-  document.getElementById('send-btn').disabled = !name;
+  const btn  = document.getElementById('send-btn');
+  const hint = document.getElementById('send-hint');
+  btn.disabled = !name;
+  if(hint) hint.style.display = name?'none':'block';
 }
 
 function sendResults() {
-  const name = document.getElementById('f-name').value.trim();
+  const name  = document.getElementById('f-name').value.trim();
+  if (!name) return;
+
   const total = filteredQ.length;
-  const pct = Math.round((score/total)*100);
-  const payload = { name: name, score: score+'/'+total+' ('+pct+'%)', report: 'Gabay Exam V1.1 Completed' };
-  const btn = document.getElementById('send-btn');
-  btn.textContent = t('sending'); btn.disabled = true;
-  fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) })
-  .then(() => {
-    document.getElementById('results-screen').style.display = 'none';
-    document.getElementById('success-screen').style.display = 'block';
+  const pct   = Math.round((score / total) * 100);
+  const now   = new Date();
+  const ts    = now.getFullYear() + '/' +
+                String(now.getMonth()+1).padStart(2,'0') + '/' +
+                String(now.getDate()).padStart(2,'0') + ' ' +
+                String(now.getHours()).padStart(2,'0') + ':' +
+                String(now.getMinutes()).padStart(2,'0');
+
+  let reportLines = ['[Gabay Exam V1.1 — 学習結果 / Result Report]'];
+  reportLines.push('受験者 / Name: ' + name);
+  reportLines.push('言語 / Lang: ' + lang.toUpperCase());
+  reportLines.push('日時 / Time: ' + ts);
+  reportLines.push('カテゴリー / Category: ' + currentCatJa);
+  reportLines.push('スコア / Score: ' + score + ' / ' + total + ' (' + pct + '%)');
+  reportLines.push('');
+  reportLines.push('--- 設問別結果 ---');
+  results.forEach((r, i) => {
+    const q = questions.find(q => q.id === r.id);
+    reportLines.push('Q' + (i+1) + '[' + r.cat + '] ' + (q ? q.ja : r.id));
+    reportLines.push('  → ' + (r.correct ? '正解 ✓' : '不正解 ✗ (選択:' + r.chosen + ' / 正答:' + r.rightKey + ')'));
   });
+  const catMap = {};
+  results.forEach(r => {
+    if (!catMap[r.cat]) catMap[r.cat] = {correct:0, total:0};
+    catMap[r.cat].total++;
+    if (r.correct) catMap[r.cat].correct++;
+  });
+  const weak = Object.entries(catMap)
+    .filter(([, d]) => (d.correct / d.total) < 0.6)
+    .map(([c]) => c);
+  if (weak.length) reportLines.push('要復習 / Needs review: ' + weak.join('、'));
+
+  const payload = {
+    name:   name,
+    score:  score + ' / ' + total + ' (' + pct + '%)',
+    report: reportLines.join("\n"),
+  };
+
+  const btn = document.getElementById('send-btn');
+  btn.textContent = t('sending');
+  btn.disabled = true;
+
+  fetch(WEB_APP_URL, {
+    method:  'POST',
+    mode:    'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify(payload),
+  })
+  .then(() => { showSuccessScreen(name, score, total, pct); })
+  .catch(() => { showSuccessScreen(name, score, total, pct); });
 }
 
+function showSuccessScreen(name, score, total, pct) {
+  document.getElementById('results-screen').style.display = 'none';
+  const ss = document.getElementById('success-screen');
+  ss.style.display = 'block';
+  document.getElementById('success-title').textContent = t('successTitle');
+  document.getElementById('success-sub').innerHTML =
+    'Salamat, ' + name + '！<br>' +
+    (lang === 'en' ? 'Sent to the director\'s spreadsheet.' : '監督のスプレッドシートに届きました。') + '<br>' +
+    'Score: <strong>' + score + '/' + total + ' (' + pct + '%)</strong><br>' +
+    (lang === 'en' ? 'Your effort always reaches us.' : 'あなたの頑張りは、必ず届いています。');
+  document.getElementById('retry-btn').textContent = t('retryBtn');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function restartQuiz() {
+  document.getElementById('f-name').value='';
+  document.getElementById('success-screen').style.display='none';
+  filterAndStart();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ══════════════════════════════════════
+   LANGUAGE SWITCH — rerenders everything
+══════════════════════════════════════ */
 function setLang(l, btn) {
   lang = l;
   document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  buildCatTabs(); updateScoreBadge(); renderQuestion();
+  buildCatTabs();
+  updateScoreBadge();
+  // If quiz is active, re-render current question in new language
+  if (document.getElementById('quiz-area').style.display !== 'none') {
+    const wasAnswered = answered;
+    renderQuestion();
+    // If already answered, re-apply answer state
+    if (wasAnswered && results.length > 0) {
+      const last = results[results.length-1];
+      // Re-highlight options
+      const q = filteredQ[currentIdx];
+      document.querySelectorAll('.option-btn').forEach(btn2 => {
+        btn2.disabled=true;
+        const k=btn2.querySelector('.opt-key').textContent;
+        if(k===q.correct) btn2.classList.add('correct');
+        else if(k===last.chosen && !last.correct) btn2.classList.add('wrong');
+        else btn2.classList.add('neutral-dim');
+      });
+      // Re-show feedback in new language
+      const fb=document.getElementById('feedback-box');
+      fb.style.display='block';
+      fb.className='feedback-box '+(last.correct?'correct':'wrong');
+      document.getElementById('fb-icon').textContent=last.correct?'✓':'✗';
+      const verdictEl=document.getElementById('fb-verdict');
+      verdictEl.className='feedback-verdict '+(last.correct?'feedback-correct':'feedback-wrong');
+      verdictEl.textContent=last.correct?t('correctVerdict'):t('wrongVerdict');
+      let fbText='';
+      if(!last.correct && q.wrong_feedback?.[last.chosen]) {
+        fbText=(lang==='en'?q.wrong_feedback[last.chosen].en:q.wrong_feedback[last.chosen].ja)+'\n\n';
+      }
+      fbText+=lang==='en'?q.feedback.en:q.feedback.ja;
+      document.getElementById('fb-text').textContent=fbText;
+      document.getElementById('fb-keyword').textContent='🔑 '+(lang==='en'?q.keyword.en:q.keyword.ja);
+      const nw=document.getElementById('next-btn-wrap');
+      nw.style.display='block';
+      const isLast=currentIdx+1>=filteredQ.length;
+      document.getElementById('next-btn').textContent=isLast?t('lastBtn'):t('nextBtn');
+      answered=true;
+    }
+  }
 }
-
-function restartQuiz() { location.reload(); }
 
 init();
 </script>
